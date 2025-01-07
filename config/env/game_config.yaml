@@ -1,0 +1,14 @@
+# 游戏环境配置
+game:
+  window_name: "Game Window"
+  resolution:
+    width: 1920
+    height: 1080
+    
+screen_capture:
+  monitor:
+    top: 0
+    left: 0
+    width: 1920
+    height: 1080
+  fps: 30 
