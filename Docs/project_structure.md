@@ -35,8 +35,12 @@
 │   │
 │   ├── environment/              # 环境交互模块
 │   │   ├── __init__.py
+│   │   ├── screen_splitter.py    # 屏幕分割  
 │   │   ├── screen_capture.py    # 屏幕捕获
 │   │   ├── input_control.py     # 输入控制
+│   │   ├── data_processor.py    # 数据处理 
+│   │   ├── image_preprocessor.py    # 图像预处理
+│   │   ├── state_manager.py    # 状态管理
 │   │   └── game_state.py        # 游戏状态解析
 │   │
 │   ├── models/                   # 模型定义模块
@@ -92,6 +96,7 @@
 │   ├── evaluate.py        # 评估脚本
 │   └── run.py            # 运行脚本
 │
+├── .gitignore            # Git忽略文件
 ├── requirements.txt        # 依赖包列表
 ├── setup.py              # 安装配置
 └── README.md             # 项目说明
@@ -131,6 +136,11 @@
   - `screen_capture.py`: 屏幕捕获实现
   - `input_control.py`: 输入控制实现
   - `game_state.py`: 游戏状态解析
+  - `screen_splitter.py`: 屏幕分割
+  - `text_recognizer.py`: 文本识别
+  - `image_preprocessor.py`: 图像预处理
+  - `data_processor.py`: 数据处理
+  - `state_manager.py`: 状态管理  
 - **models/**: 模型定义
   - `cnn_model.py`: CNN模型架构
   - `lstm_model.py`: LSTM模型架构
@@ -174,9 +184,11 @@
 
 ## 关键文件说明
 
-1. `requirements.txt`: 项目依赖包列表
-2. `setup.py`: 项目安装配置
-3. `README.md`: 项目总体说明
+1. `requirements.txt`: 列出所有Python依赖包
+2. `setup.py`: 项目安装配置文件
+3. `activate_env.bat`: 虚拟环境激活脚本
+4. `.gitignore`: Git版本控制忽略文件配置
+5. `README.md`: 项目总体说明文档
 
 ## 使用建议
 
@@ -191,3 +203,28 @@
 1. 新增模型时在 `models/` 下添加相应文件
 2. 添加新的数据处理方法在 `data/` 下实现
 3. 扩展功能时注意更新配置文件和文档 
+
+## 开发指南
+
+1. 首先激活虚拟环境：
+   ```bash
+   .\activate_env.bat
+   ```
+
+2. 安装依赖：
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. 开发流程：
+   - 配置文件修改在 `config/` 目录下进行
+   - 新功能开发在 `src/` 目录下对应模块中进行
+   - 数据处理遵循 `raw/ -> processed/` 的流程
+   - 所有新功能需要在 `tests/` 下添加对应测试
+
+## 注意事项
+
+1. 保持目录结构清晰，遵循模块化原则
+2. 定期备份数据和模型
+3. 遵循代码规范和文档规范
+4. 及时更新文档和测试用例

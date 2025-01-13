@@ -1,0 +1,95 @@
+# 基础配置
+basic_config:
+  name_zh: "采集系统基本配置"
+  base_output_dir: "A:/1000Y_DATA_TEMP/data"  # 基础输出目录  
+  screenshots_dir: "original"  # 原始截图目录
+  preprocessed_dir: "preprocessed"  # 预处理截图目录
+  state_dir: "states_json"  # 状态目录
+  window_name: "笑傲千年" #窗口名字 支持模糊查找
+  screen_capture:
+      top: 0
+      left: 0
+      width: 1040
+      height: 807   
+  show_ocr_log: False # 是否显示OCR的日志信息
+  log_dir: "logs"  # 日志目录
+  log_level: "DEBUG"  # 可选: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  console_log_level: "INFO"  # 控制台日志级别
+  file_log_level: "DEBUG"   # 文件日志级别
+     
+# 标题区域
+title_area:
+  Enabled: True
+  name_zh: "标题区域"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [32, 7, 899, 22]  # 使用列表表示坐标
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR
+    drop_score: 0.6  # 降低置信度阈值，保留更多可能的结果
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 标题区域
+game_area:
+  Enabled: True
+  name_zh: "游戏主画面区"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [8, 31, 1032, 628]  # 使用列表表示坐标
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR
+    drop_score: 0.6  # 降低置信度阈值，保留更多可能的结果
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: True
+
+# 标题区域
+chat_messages:
+  Enabled: True
+  name_zh: "聊天消息区域"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [305, 677, 727, 764]  # 使用列表表示坐标
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR
+    drop_score: 0.6  # 降低置信度阈值，保留更多可能的结果
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: True 
+  save_debug:  # 是否保存调试图像
+    Enabled: True
+
+
+
+  
+  

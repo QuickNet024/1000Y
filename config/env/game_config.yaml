@@ -1,14 +1,26 @@
 # 游戏环境配置
-game:
-  window_name: "Game Window"
+windows_game:
+  window_name: "笑傲千年" #窗口名字 支持模糊查找
   resolution:
-    width: 1920
-    height: 1080
-    
-screen_capture:
+    width: 1040
+    height: 807
+
+# 日志配置
+logging:
+  level: "DEBUG"  # 可选: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  show_input_events: true  # 是否显示输入事件的详细信息
+  show_progress: true  # 是否显示进度信息
+
+# 游戏采样配置    
+screen_data:
   monitor:
     top: 0
     left: 0
-    width: 1920
-    height: 1080
-  fps: 30 
+    width: 1040
+    height: 807
+  fps: 5 
+  screenshots_file: "A:/1000Y_DATA_TEMP/data/raw/screenshots"
+  mouse_area: ((0, 0), (1040, 807)) 
+  actions_mouse_file: "A:/1000Y_DATA_TEMP/data/raw/actions/mouse_actions.json"
+  actions_keyboard_file: "A:/1000Y_DATA_TEMP/data/raw/actions/keyboard_actions.json"
+  keys_to_monitor: [ 'tab', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12','space', 'shift', 'ctrl', 'alt']

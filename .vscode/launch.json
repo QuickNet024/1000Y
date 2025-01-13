@@ -1,0 +1,17 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Debug with Args",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "--mode", "collect",
+                "--config", "config/env/game_config.yaml",
+                "--duration", "360"
+            ],
+            "console": "integratedTerminal"
+        }
+    ]
+}

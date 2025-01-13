@@ -1,0 +1,367 @@
+# 游戏画面区域配置
+
+# 标题区域配置
+title_area:
+  # 标题区
+  basic:
+    x1: 0
+    y1: 0
+    x2: 1040
+    y2: 31
+  # 信息区
+  info_area:
+    basic:
+      x1: 32
+      y1: 7
+      x2: 899
+      y2: 22
+
+# 游戏主画面区域配置
+game_area:
+  # 游戏主画面区
+  basic:
+    x1: 8
+    y1: 31
+    x2: 1032
+    y2: 628
+
+  # 系统公告区域 - 显示游戏系统公告信息 
+  system_announcement:
+    basic:
+      x1: 7 
+      y1: 31
+      x2: 307
+      y2: 101
+
+  # GM公告区域 - 显示游戏管理员发布的公告
+  gm_notice:
+    basic:
+      x1: 8
+      y1: 60
+      x2: 968
+      y2: 141
+    # 公告-1
+    notice_1:
+      basic:
+        x1: 8
+        y1: 60
+        x2: 968
+        y2: 77
+    # 公告-2
+    notice_2:
+      basic:
+        x1: 8
+        y1: 92
+        x2: 968
+        y2: 109
+    # 公告-3
+    notice_3:
+      basic:
+        x1: 8
+        y1: 124
+        x2: 968
+        y2: 141
+
+    # 角色活动区域 - 显示角色、NPC、怪物等游戏实体
+  character_area:
+      basic:  
+        x1: 418 
+        y1: 268
+        x2: 622
+        y2: 472
+
+      # 近身寻怪名区域-1 - 显示近身寻怪信息
+      near_monster_name_1:
+        basic:
+          x1: 431
+          y1: 304
+          x2: 609
+          y2: 389
+
+      # 近身寻怪名区域-2 - 显示近身寻怪信息
+      near_monster_name_2:  
+        basic:
+          x1: 383
+          y1: 268
+          x2: 657
+          y2: 425
+
+      # 近身寻怪图标区域-1 - 显示近身寻怪信息
+      near_monster_icon_1:
+        basic:
+          x1: 431
+          y1: 282
+          x2: 622
+          y2: 472
+
+  # 目标信息区域 - 显示选中目标的详细信息
+  target_info: 
+    basic:
+      x1: 18
+      y1: 353
+      x2: 199
+      y2: 395
+    
+    # 怪名+血量区域
+    monster_name_and_hp:
+      basic:
+        x1: 32
+        y1: 366
+        x2: 171
+        y2: 382
+
+    # 关闭选择窗口
+    close_target_info:
+      basic:
+        x1: 187
+        y1: 356
+        x2: 199
+        y2: 369
+
+  # 滚动字幕 *复活信息
+  scroll_text:
+    basic:  
+      x1: 28
+      y1: 170 
+      x2: 127
+      y2: 231
+
+# 界面面板区域配置
+panel_area:
+  basic:
+    x1: 8
+    y1: 629
+    x2: 1031
+    y2: 798
+
+  # 聊天消息区域 - 显示各类聊天信息
+  chat_messages:
+    basic:
+      x1: 305
+      y1: 677
+      x2: 727
+      y2: 764
+
+  # 聊天输入框 - 用于输入聊天内容
+  input_box:
+    basic:
+      x1: 247
+      y1: 775
+      x2: 742
+      y2: 793
+
+  # 功能按钮区域 - 包含各种游戏功能按钮
+  button_area:
+    basic:
+      x1: 204
+      y1: 629
+      x2: 1021
+      y2: 798
+
+    # 快捷按钮区域-1
+    shortcut_button_1:
+      basic:
+        x1: 332
+        y1: 630
+        x2: 479
+        y2: 666
+
+    # 快捷按钮区域-2
+    shortcut_button_2:
+      basic:
+        x1: 562
+        y1: 630
+        x2: 710
+        y2: 666
+
+    # 境界开关
+    realm_switch:
+      basic:
+        x1: 503
+        y1: 634
+        x2: 536
+        y2: 666
+
+    # 竖向按钮
+    vertical_button:
+      basic:
+        x1: 204
+        y1: 652
+        x2: 235
+        y2: 798
+
+    # 横向按钮
+    horizontal_button:
+      basic:
+        x1: 754
+        y1: 770
+        x2: 1021
+        y2: 797
+
+  # 技能经验区域 - 显示当前技能经验值
+  skill_exp:
+    basic:
+      x1: 30
+      y1: 652
+      x2: 199
+      y2: 676
+
+    # 计算区域—1
+    calculate_area_1:
+      basic:
+        x1: 109
+        y1: 659
+        x2: 165
+        y2: 663
+
+    # 计算区域—2
+    calculate_area_2:
+      basic:
+        x1: 109
+        y1: 668
+        x2: 165
+        y2: 672
+
+  # 已激活技能区域 - 显示当前正在使用的技能
+  active_skills:
+    basic:
+      x1: 30
+      y1: 677
+      x2: 199
+      y2: 767
+
+    # OCR取值区
+    ocr_value_area:
+      basic:
+        x1: 46
+        y1: 678
+        x2: 190
+        y2: 755
+
+  # 坐标信息区域 - 显示角色当前坐标位置
+  coordinates:
+    basic:
+      x1: 30
+      y1: 771
+      x2: 199
+      y2: 798
+
+    # OCR取值区
+    ocr_value_area:
+      basic:
+        x1: 74
+        y1: 776
+        x2: 186
+        y2: 793
+
+  # 人物信息区域 - 显示角色当前信息
+  character_info:
+    basic:
+      x1: 877
+      y1: 652
+      x2: 1009
+      y2: 764
+    
+    # 元气区域
+    qi_area:
+      basic:
+        x1: 877
+        y1: 652
+        x2: 1009
+        y2: 676
+
+      # 计算取值区
+      calculate_area:
+        basic:
+          x1: 927
+          y1: 662
+          x2: 1004
+          y2: 668
+
+    # 头防区域
+    head_area:
+      basic:
+        x1: 877
+        y1: 677
+        x2: 1009
+        y2: 691
+
+      # 计算取值区
+      calculate_area:
+        basic:
+          x1: 927
+          y1: 680
+          x2: 1004
+          y2: 686
+
+    # 手防区域
+    hand_area:
+      basic:
+        x1: 877
+        y1: 692
+        x2: 1009
+        y2: 709
+
+      # 计算取值区
+      calculate_area:
+        basic:
+          x1: 927
+          y1: 698
+          x2: 1004
+          y2: 704
+
+    # 脚防区域
+    foot_area:
+      basic:
+        x1: 877
+        y1: 710
+        x2: 1009
+        y2: 728
+
+      # 计算取值区
+      calculate_area:
+        basic:
+          x1: 927
+          y1: 717
+          x2: 1004
+          y2: 723
+
+    # 内功区域
+    neigong_area:
+      basic:
+        x1: 877
+        y1: 729
+        x2: 1009
+        y2: 746
+
+      # 计算取值区
+      calculate_area:
+        basic:
+          x1: 927
+          y1: 735
+          x2: 1004
+          y2: 741
+
+    # 活力区域
+    vitality_area:
+      basic:
+        x1: 877
+        y1: 747
+        x2: 1009
+        y2: 764
+
+      # 计算取值区
+      calculate_area:
+        basic:
+          x1: 927
+          y1: 754
+          x2: 1004
+          y2: 759
+
+  # 角色图片区域 - 显示角色图片
+  character_image:
+    basic:
+      x1: 793
+      y1: 645
+      x2: 871
+      y2: 763

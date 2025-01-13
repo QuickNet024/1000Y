@@ -1,13 +1,18 @@
+# -*- coding: utf-8 -*-
 # 深度学习框架
 torch>=2.0.0
 torchvision>=0.15.0
+
+# OCR框架
+paddlepaddle-gpu>=2.6.2
+paddleocr>=2.8.0
 
 # 强化学习框架
 stable-baselines3>=2.0.0
 gym>=0.26.0
 
 # 图像处理
-opencv-python>=4.8.0
+opencv-python>=4.10.0.84
 mss>=9.0.1
 Pillow>=10.0.0
 
@@ -30,7 +35,7 @@ pynput>=1.7.6
 keyboard>=0.13.5
 
 # 工具库
-pyyaml>=6.0.1
+pyyaml>=5.4.0
 tqdm>=4.65.0
 pathlib>=1.0.1
 
@@ -38,3 +43,6 @@ pathlib>=1.0.1
 pytest>=7.4.0
 black>=23.7.0
 flake8>=6.1.0 
+
+# Windows 窗口
+pywin32>=306

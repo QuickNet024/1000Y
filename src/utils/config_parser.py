@@ -1,24 +1,23 @@
 import yaml
 from pathlib import Path
+from typing import Union, Dict, Any
 
 class ConfigParser:
     """配置文件解析类"""
     
     @staticmethod
-    def parse(config_path):
-        """解析yaml配置文件
+    def parse_yaml(file_path: Union[str, Path]) -> Dict[str, Any]:
+        """解析YAML配置文件
         
         Args:
-            config_path: 配置文件路径
+            file_path: YAML文件路径
             
         Returns:
-            dict: 配置字典
+            Dict: 解析后的配置字典
         """
-        config_path = Path(config_path)
-        if not config_path.exists():
-            raise FileNotFoundError(f"配置文件不存在: {config_path}")
+        file_path = Path(file_path)
+        if not file_path.exists():
+            raise FileNotFoundError(f"找不到配置文件: {file_path}")
             
-        with open(config_path) as f:
-            config = yaml.safe_load(f)
-            
-        return config 
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return yaml.safe_load(f) 
