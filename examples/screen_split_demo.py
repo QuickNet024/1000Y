@@ -100,16 +100,16 @@ class GameScreenProcessor:
         )
         
         # 初始化变量
-        self.current_screen = None
-        self.capture_image_path = None
-        self.current_regions = {}
-        self.split_image_path = None
-        self.preprocessed_images = {}
-        self.preprocessed_image_path = None
-        self.ocr_results = {}
-        self.ocr_image_path = None
-        self.timestamp = None
-        self.window_manager.move_window(0,0)
+        self.current_screen = None      #
+        self.capture_image_path = None  # 捕获的原始图像
+        self.current_regions = {}       # 分割后的图像
+        self.split_image_path = None    # 分割后的图像路径      
+        self.preprocessed_images = {}   # 预处理后的图像
+        self.preprocessed_image_path = None # 预处理后的图像路径
+        self.ocr_results = {}           # OCR识别结果   
+        self.ocr_image_path = None      # OCR识别后的图像路径
+        self.timestamp = None           # 时间戳
+        self.window_manager.move_window(0,0)  # 移动窗口到屏幕左上角
         self.logger.info("初始化完成")
         
     def capture_screen(self,save_capture: bool = False) -> np.ndarray:
@@ -134,14 +134,15 @@ class GameScreenProcessor:
     # 分割区域
     def split_regions(self, 
                      regions_list: List[str],
-                     save_debug: bool = False,
+                     save_split: bool = False,
                      debug_mode: bool = False,
                      timestamp: str = None) -> Dict[str, np.ndarray]:
         """分割指定区域"""
+        
         self.current_regions = self.screen_splitter.process_image(
             screen_image=self.current_screen,
             regions_to_process=regions_list,
-            save_debug=save_debug,
+            save_split=save_split,
             debug_mode=debug_mode,
             timestamp=timestamp
         )
@@ -213,7 +214,9 @@ class GameScreenProcessor:
             dict: 处理后的数据，格式为 {区域名: 处理结果}
         """
         # 生成时间戳，用于调试图片的保存等
-        timestamp = str(time.time()).replace('.', '_')
+        # 确保时间戳小数点后有7位数字
+        timestamp = f"{time.time():.7f}".replace('.', '_')
+            
         self.timestamp = timestamp
         # 初始化处理结果字典
         processed_data = {}
@@ -252,10 +255,12 @@ class GameScreenProcessor:
                 # 根据配置的坐标将完整屏幕图像分割成各个区域
                 if region_config.get('screen_split').get('Enabled'):
                     self.logger.info(f"分割区域: {region_name}")
+                    save_split = region_config.get('screen_split').get('save_split')
                     self.split_regions([region_name], 
-                                     save_debug=save_debug,
+                                     save_split=save_split,
                                      debug_mode=debug_mode,
-                                     timestamp=timestamp)
+                                     timestamp=timestamp,
+                                     )
                 
                 # 5. 图像预处理
                 # 对分割后的区域图像进行预处理（如二值化、降噪等）
@@ -265,6 +270,9 @@ class GameScreenProcessor:
                                         save_debug=save_debug,
                                         debug_mode=debug_mode,
                                         timestamp=timestamp)
+                else:
+                    # 当预处理被禁用时，直接使用分割后的原始图像
+                    self.preprocessed_images = self.current_regions
                 
                 # 6. OCR文字识别
                 # 对预处理后的图像进行OCR识别
@@ -277,8 +285,11 @@ class GameScreenProcessor:
                     # 如果有识别结果，保存到处理结果字典中
                     if ocr_results:
                         processed_data[region_name] = ocr_results.get(region_name, {})
-                
-                # 7. 数据处理
+                else:   
+                    # 如果OCR被禁用，则直接使用预处理后的图像
+                    processed_data[region_name] = self.preprocessed_images.get(region_name, {})
+
+                # 7. 数据处理       
                 # 对OCR结果进行后处理（如数据提取、格式化等）
                 if region_config.get('data_processor', {}).get('Enabled'):
                     self.logger.info(f"数据处理: {region_name}")
@@ -289,12 +300,16 @@ class GameScreenProcessor:
                             self.preprocessed_images.get(region_name),  # 预处理后的图像
                             region_config  # 区域配置
                         )
-            
-            # 8. 状态更新
-            # 在所有区域处理完成后，更新整体状态
-            if any(self.area_config[r].get('state_manager', {}).get('Enabled') 
-                   for r in regions_list):
-                self.update_state(processed_data, timestamp)
+                        
+                # 8. 处理区域依赖关系
+                self.handle_region_dependencies(region_name, processed_data)
+
+                
+                # 9. 状态更新
+                # 在所有区域处理完成后，更新整体状态 
+                if any(self.area_config[r].get('state_manager', {}).get('Enabled') 
+                       for r in regions_list):
+                    self.update_state(processed_data, timestamp)
                 
             self.logger.info("帧处理完成")
             return processed_data
@@ -302,6 +317,37 @@ class GameScreenProcessor:
         except Exception as e:
             self.logger.error(f"处理帧时出错: {e}", exc_info=True)
             raise
+
+    # 处理区域间的依赖关系
+    def handle_region_dependencies(self, region_name: str, processed_data: dict):
+        """处理区域间的依赖关系
+        
+        Args:
+            region_name: 当前处理的区域名称
+            processed_data: 处理后的数据
+        """
+        # 检查区域是否有依赖配置
+        if not self.area_config[region_name].get('dependencies'):
+            return
+        
+        dependencies = self.area_config[region_name].get('dependencies', [])
+        control_type = self.area_config[region_name].get('control_type')
+        
+        # 根据不同的控制类型处理依赖
+        if control_type == "disable_when_false":
+            status_key = f"{region_name}_status"  # 例如: target_panel_status
+            if processed_data[region_name].get(status_key) == False:
+                # 关闭相关检测
+                for dep in dependencies:
+                    if dep in self.area_config:
+                        self.area_config[dep]['Enabled'] = False
+                self.logger.info(f"{region_name}未识别到,已关闭相关检测: {dependencies}")
+            else:
+                # 重新开启相关检测
+                for dep in dependencies:
+                    if dep in self.area_config:
+                        self.area_config[dep]['Enabled'] = True
+                self.logger.info(f"{region_name}已识别到,重新开启相关检测: {dependencies}")
 
 def main():
     """主函数"""
@@ -318,7 +364,9 @@ def main():
         **logger_config
     ).get_logger()
 
-    # 初始化处理器，传递logger实例  
+
+    
+    # 创建处理器
     processor = GameScreenProcessor(
         config_manager=config_manager,      # 传递配置管理器
         logger=logger                       # 直接传递logger实例       
@@ -334,15 +382,15 @@ def main():
         # 只处理字典类型的配置（区域配置）
         if isinstance(config, dict):
             logger.debug(f"区域: {region_name} ({config.get('name_zh', '')})")
-            logger.debug(f"├── 区域启用状态: {config.get('Enabled', False)}")
-            logger.debug(f"├── 截图模块: {config.get('screen_capture', {}).get('coordinates')}")
-            logger.debug(f"├── 分割模块: {config.get('screen_split', {}).get('Enabled', False)}")
-            logger.debug(f"├── 预处理模块: {config.get('image_preprocess', {}).get('Enabled', False)}")
-            logger.debug(f"├── OCR模块: {config.get('text_recognizer', {}).get('Enabled', False)}")
-            logger.debug(f"├── 数据处理模块: {config.get('data_processor', {}).get('Enabled', False)}")
-            logger.debug(f"├── 状态管理模块: {config.get('state_manager', {}).get('Enabled', False)}")
-            logger.debug(f"├── 调试模式: {config.get('debug_mode', {}).get('Enabled', False)}")
-            logger.debug(f"└── 保存调试图像: {config.get('save_debug', {}).get('Enabled', False)}")
+            logger.debug(f"├── 区域启用状态: {config.get('Enabled')}")
+            logger.debug(f"├── 截图模块: {config.get('screen_capture', {}).get('Enabled')}")
+            logger.debug(f"├── 分割模块: {config.get('screen_split', {}).get('Enabled')}")
+            logger.debug(f"├── 预处理模块: {config.get('image_preprocess', {}).get('Enabled')}")
+            logger.debug(f"├── OCR模块: {config.get('text_recognizer', {}).get('Enabled')}")
+            logger.debug(f"├── 数据处理模块: {config.get('data_processor', {}).get('Enabled')}")
+            logger.debug(f"├── 状态管理模块: {config.get('state_manager', {}).get('Enabled')}")
+            logger.debug(f"├── 调试模式: {config.get('debug_mode', {}).get('Enabled')}")
+            logger.debug(f"└── 保存调试图像: {config.get('save_debug', {}).get('Enabled')}")
 
     # 获取所有需要处理的区域（排除基础配置）
     regions_to_process = [
@@ -351,18 +399,25 @@ def main():
     ]
     
     try:
-        # while True:
+        while True:
+            # 记录循环开始时间
+            loop_start_time = time.time()
+            
             # 处理一帧画面
             processed_data = processor.process_frame(regions_to_process)
             logger.info(f"处理结果: {processed_data}")
             
             # 检查是否按下 'q' 键退出
-            # if keyboard.is_pressed('q'):
-            #     logger.info("程序退出")
-                # break
+            if keyboard.is_pressed('q'):
+                logger.info("程序退出")
+                break
                 
+            # 计算循环耗时
+            loop_time = time.time() - loop_start_time
+            logger.info(f"本次循环耗时: {loop_time:.3f}秒")
+            
             # 控制处理频率
-            # time.sleep(1)  # 每秒处理一次
+            time.sleep(3)  # 每秒处理一次
             
     except KeyboardInterrupt:
         logger.warning("程序被用户中断")

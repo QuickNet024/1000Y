@@ -26,15 +26,244 @@ class ImagePreprocessor:
         self.region_specific_methods = {
             'title_area': self._preprocess_title_area,  # 标题区域
             'game_area': self._preprocess_game_area,  # 游戏区域 
-            'chat_messages': self._preprocess_chat_messages,  # 聊天消息区域
+            'char_vitality': self._preprocess_char_vitality,  # 角色活力值
+            'char_neigong': self._preprocess_neigong_area,  # 角色内功值
+            'char_head': self._preprocess_char_defense,  # 角色头防值
+            'char_hand': self._preprocess_char_defense,  # 角色手防值
+            'char_foot': self._preprocess_char_defense,  # 角色脚防值  
+            'char_qigong': self._preprocess_char_defense,  # 角色元气值 
+            'skill_exp_min': self._preprocess_skill_exp,  # 技能小经验值
+            'skill_exp_max': self._preprocess_skill_exp,  # 技能大经验值
+            'target_hp': self._preprocess_target_hp,  # 目标血量
+            'nearby_monster_name_1': self._preprocess_nearby_monster_name_1,  # 近身寻怪名区域-1
+            'nearby_monster_name_2': self._preprocess_nearby_monster_name_1,  # 近身寻怪名区域-2
+            'char_revival': self._preprocess_char_revival,  # 角色复活信息
+            'char_eat_food': self._preprocess_char_revival,  # 角色食物状态
             # 可以继续添加更多区域特定的处理方法...
         }
         self.logger.info("=========================图像预处理器初始化完成=========================    ")
     
-    # 聊天消息区域预处理
-    def _preprocess_chat_messages(self, image: np.ndarray) -> np.ndarray:
-        """聊天消息区域预处理"""
-        return image
+    
+    # 角色复活信息预处理
+    def _preprocess_char_revival(self, image: np.ndarray) -> np.ndarray:
+        """
+        角色复活信息预处理
+        """
+        # 增强对比度
+        alpha = 1.3
+        beta = 0
+        enhanced = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+
+        # 转换到HSV颜色空间
+        hsv = cv2.cvtColor(enhanced, cv2.COLOR_BGR2HSV)
+
+        # 定义黄色的HSV范围（调整更精确的范围）
+        lower_yellow = np.array([20, 130, 130])  # 稍微降低饱和度和亮度的下限
+        upper_yellow = np.array([30, 255, 255])
+
+        # 创建黄色掩码
+        yellow_mask = cv2.inRange(hsv, lower_yellow, upper_yellow)
+
+        # 去除小面积的噪点
+        # 1. 先进行连通区域分析
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(yellow_mask, connectivity=8)
+
+        # 2. 创建新的掩码，只保留面积大于阈值的区域
+        min_area = 1  # 减小最小面积阈值，保留文字中的点
+        cleaned_mask = np.zeros_like(yellow_mask)
+        for i in range(1, num_labels):  # 从1开始，跳过背景
+            if stats[i, cv2.CC_STAT_AREA] >= min_area:
+                cleaned_mask[labels == i] = 255
+        # 反转图像
+        cleaned_mask = cv2.bitwise_not(cleaned_mask)    
+        return cleaned_mask
+    
+    # 近身寻怪名区域-1
+    def _preprocess_nearby_monster_name_1(self, image: np.ndarray) -> np.ndarray:
+        """
+        近身寻怪名区域-1预处理
+        """
+        # 获取图像尺寸
+        height, width = image.shape[:2]
+
+        # 创建掩码（全白色）
+        mask = np.ones_like(image) * 255
+
+        # 在垂直方向上按规律填充黑色遮罩
+        y = 16  # 从第16行开始
+        while y < height:
+            # 填充20行
+            if y + 20 <= height:
+                pts = np.array([[0, y], [0, y+20], [width, y+20], [width, y]])
+                cv2.fillPoly(mask, [pts], (0, 0, 0))
+            y += 36  # 跳到下一个填充起点(20+16=36)
+
+        # 第二个固定区域的填充
+        # 计算图片中心位置
+        center_x = width // 2
+        center_y = height // 2
+        
+        # 计算第二个遮罩区域的坐标
+        # 上下高度为16px，总宽度为42px
+        mask_half_height = 8  # 16/2
+        mask_half_width = 21  # 42/2
+        
+        # 计算遮罩区域的四个角点
+        pts2 = np.array([
+            [center_x - mask_half_width, center_y - mask_half_height],  # 左上
+            [center_x - mask_half_width, center_y + mask_half_height],  # 左下
+            [center_x + mask_half_width, center_y + mask_half_height],  # 右下
+            [center_x + mask_half_width, center_y - mask_half_height]   # 右上
+        ])
+        cv2.fillPoly(mask, [pts2], (0, 0, 0))
+
+        # 将掩码应用到原图
+        masked_image = cv2.bitwise_and(image, mask)
+
+        # 反转图像
+        image = cv2.bitwise_not(masked_image)
+        # -------------------------------------------------------------------------------------------
+        # 将图像从 BGR 转换为 HSV 颜色空间
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+        # 定义红色的范围（HSV 颜色空间）
+        lower_red = np.array([0, 50, 50])  # 红色的下限
+        upper_red = np.array([10, 255, 255])  # 红色的上限
+
+        # 创建一个掩码，标记红色区域    *蓝色文字也变黑色
+        red_mask = cv2.inRange(hsv, lower_red, upper_red)
+        # 创建一个掩码，标记 R=255 且 B=255 的区域    *绿色文字也变黑色
+        rb_mask = (image[:, :, 0] >= 255) & (image[:, :, 2] >= 255) & (image[:, :, 1] < 10)     # 绿色文字也变黑色
+        # 将红色区域和 R=255 且 B=255 的区域填充为黑色
+        image[red_mask == 255] = [0, 0, 0]      # 红色区域
+        image[rb_mask] = [0, 0, 0]              # R=255 且 B=255 的区域
+
+        # 将图像转换为灰度图
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+
+        # 二值化处理（阈值为 15）
+        _, binary = cv2.threshold(gray, 15, 255, cv2.THRESH_BINARY)
+        
+        return binary
+    
+    # 目标血量预处理
+    def _preprocess_target_hp(self, image: np.ndarray) -> np.ndarray:
+        """
+        目标血量预处理
+        """
+        # 增强对比度
+        alpha = 1.3
+        beta = 0
+        image = cv2.convertScaleAbs(image, alpha=alpha, beta=beta)
+
+        # 转换到HSV颜色空间
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+        # 定义红色的HSV范围
+        lower_red1 = np.array([0, 100, 100])
+        upper_red1 = np.array([10, 255, 255])
+        lower_red2 = np.array([160, 100, 100])
+        upper_red2 = np.array([180, 255, 255])
+
+        # 创建红色掩码
+        mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+        mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+        red_mask = mask1 + mask2
+
+        # 应用形态学操作
+        kernel = np.ones((3,3), np.uint8)
+        red_mask = cv2.dilate(red_mask, kernel, iterations=1)
+        red_mask = cv2.erode(red_mask, kernel, iterations=1)
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel)
+
+        # 获取图像尺寸
+        height, width = red_mask.shape
+        center_y = height // 2
+        sample_height = height
+        start_y = center_y - sample_height//2
+        end_y = center_y + sample_height//2
+
+        # 创建最终的二值图
+        binary = np.zeros_like(red_mask)
+        # 只保留采样区域内的有效像素
+        for x in range(width):
+            column = red_mask[start_y:end_y, x]
+            if np.any(column > 0):
+                binary[start_y:end_y, x] = 255
+
+        # 反转图片颜色
+        binary = cv2.bitwise_not(binary)
+
+        return binary
+       
+    # 技能经验预处理
+    def _preprocess_skill_exp(self, image: np.ndarray) -> np.ndarray:
+        """
+        技能经验预处理
+        """
+        # 设置对比度为最大
+        alpha = 2  # 对比度系数
+        beta = 0     # 亮度调整
+        # 转换为灰度图
+        gray = cv2.cvtColor(cv2.convertScaleAbs(image, alpha=alpha, beta=beta), cv2.COLOR_BGR2GRAY)
+        # 二值化处理
+        _, binary = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY)
+        # 反转图片颜色
+        binary = cv2.bitwise_not(binary)
+        return binary 
+
+    # 角色防值预处理
+    def _preprocess_char_defense(self, image: np.ndarray) -> np.ndarray:
+        """
+        角色防值预处理
+        """
+        # 设置对比度为最大
+        alpha = 2  # 对比度系数
+        beta = 0     # 亮度调整
+        # 转换为灰度图
+        gray = cv2.cvtColor(cv2.convertScaleAbs(image, alpha=alpha, beta=beta), cv2.COLOR_BGR2GRAY)
+        # 二值化处理
+        _, binary = cv2.threshold(gray, 100, 255, cv2.THRESH_BINARY)
+        # 反转图片颜色
+        binary = cv2.bitwise_not(binary)
+        return binary   
+    
+    # 角色内功值预处理
+    def _preprocess_neigong_area(self, image: np.ndarray) -> np.ndarray:
+        """
+        角色内功值预处理
+        """
+        # 设置对比度为最大
+        alpha = 2  # 对比度系数
+        beta = 0     # 亮度调整
+        # 转换为灰度图
+        gray = cv2.cvtColor(cv2.convertScaleAbs(image, alpha=alpha, beta=beta), cv2.COLOR_BGR2GRAY)
+        # 步骤2：二值化处理
+        _, binary = cv2.threshold(gray, 76, 255, cv2.THRESH_BINARY)
+
+        # 反转图片颜色
+        binary = cv2.bitwise_not(binary)
+
+        return binary
+    
+    # 角色活力值预处理
+    def _preprocess_char_vitality(self, image: np.ndarray) -> np.ndarray:
+        """
+        角色活力值预处理
+        """
+
+        # 设置对比度为最大
+        alpha = 2  # 对比度系数
+        beta = 0     # 亮度调整
+        # 转换为灰度图
+        gray = cv2.cvtColor(cv2.convertScaleAbs(image, alpha=alpha, beta=beta), cv2.COLOR_BGR2GRAY)
+        # 步骤2：二值化处理
+        _, binary = cv2.threshold(gray, 76, 255, cv2.THRESH_BINARY)
+
+        # 反转图片颜色
+        binary = cv2.bitwise_not(binary)
+
+        return binary
     
     # 游戏区域预处理
     def _preprocess_game_area(self, image: np.ndarray) -> np.ndarray:
@@ -115,6 +344,7 @@ class ImagePreprocessor:
             cv2.THRESH_BINARY, 11, 2)
         return cv2.cvtColor(binary, cv2.COLOR_GRAY2BGR)
 
+    # 显示调试窗口
     def show_debug_window(self, region_name: str, image: np.ndarray) -> None:
         """显示调试窗口
         
@@ -127,7 +357,7 @@ class ImagePreprocessor:
         # 非阻塞方式检查按键，如果按下'q'则关闭所有窗口
         if cv2.waitKey(1) & 0xFF == ord('q'):
             cv2.destroyAllWindows()
-
+    # 处理多个区域的图像
     def process_images(self,
                       images: Dict[str, np.ndarray],
                       regions_to_process: Optional[List[str]] = None,

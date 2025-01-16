@@ -56,7 +56,7 @@ class ScreenSplitter:
     
     def split_region(self, 
                     image: np.ndarray, 
-                    region_name: str) -> np.ndarray:
+                    region_name: str) -> Optional[np.ndarray]:
         """分割指定区域的图像
         
         Args:
@@ -64,22 +64,26 @@ class ScreenSplitter:
             region_name: 要分割的区域名称
             
         Returns:
-            np.ndarray: 分割后的区域图像
+            Optional[np.ndarray]: 分割后的区域图像，如果分割失败返回None
             
         Note:
-            如果分割失败，会返回原始图像并记录错误日志
+            修改返回值为None而不是原始图像，这样可以在process_image中进行错误处理
         """
         try:
             x1, y1, x2, y2 = self.get_region_coords(region_name)
+            # 确保坐标在图像范围内
+            h, w = image.shape[:2]
+            x1, x2 = max(0, x1), min(w, x2)
+            y1, y2 = max(0, y1), min(h, y2)
             return image[y1:y2, x1:x2]
         except Exception as e:
             self.logger.error(f"分割区域 {region_name} 时出错: {str(e)}")
-            return image
-            
+            return None
+    
     def process_image(self,
                      screen_image: np.ndarray,
                      regions_to_process: List[str],
-                     save_debug: bool = False,
+                     save_split: bool = False,
                      debug_mode: bool = False,
                      timestamp: str = None) -> Dict[str, np.ndarray]:
         """处理并分割图像
@@ -87,34 +91,35 @@ class ScreenSplitter:
         Args:
             screen_image: 需要分割的原始图像
             regions_to_process: 需要处理的区域列表
-            save_debug: 是否保存调试图像
+            save_split: 是否保存分割后的图像
             debug_mode: 是否显示调试图像
             timestamp: 时间戳，用于调试图像的文件名
             
         Returns:
             Dict[str, np.ndarray]: 分割后的图像字典，key为区域名称
-            
-        Raises:
-            ValueError: 当输入图像为空时抛出
         """
         if screen_image is None:
             raise ValueError("输入图像不能为空")
-        result_regions = {}
         
-        # 先完成所有区域的分割
+        result_regions = {}
+        original_image = screen_image.copy()  # 保存原始图像的副本
+        
+        # 处理所有区域
         for region_name in regions_to_process:
             try:
-                # 分割区域
-                region_image = self.split_region(screen_image, region_name)
+                # 始终使用原始图像进行分割
+                region_image = self.split_region(original_image, region_name)
+                if region_image is None:
+                    self.logger.warning(f"区域 {region_name} 分割失败，跳过该区域")
+                    continue
+                    
                 result_regions[region_name] = region_image
                 
-                # 保存调试图像
-                if save_debug and timestamp:
+                # 保存分割图像
+                if save_split and timestamp:
                     try:
-                        # 创建区域特定的子目录
                         region_dir = self.screenshots_dir / region_name
                         region_dir.mkdir(parents=True, exist_ok=True)
-                        # 保存图像
                         save_path = region_dir / f"{timestamp}.png"
                         cv2.imwrite(str(save_path), region_image)
                         self.logger.debug(f"已保存区域图像: {save_path}")
@@ -124,20 +129,10 @@ class ScreenSplitter:
             except Exception as e:
                 self.logger.error(f"处理区域 {region_name} 时出错: {str(e)}")
                 continue
-                    # 如果开启了调试模式，显示所有分割后的图像
+        
+        # 调试模式显示图像
         if debug_mode:
-            while True:
-                # 显示所有分割后的图像
-                for region_name, image in result_regions.items():
-                    window_name = f"original Split Region : {region_name}"
-                    cv2.imshow(window_name, image)
-                
-                # 检查是否按下 'q' 键
-                key = cv2.waitKey(100) & 0xFF  # 增加等待时间到100ms
-                if key == ord('q'):
-                    cv2.destroyAllWindows()
-                    break    
-
+            self._show_debug_images(result_regions)
         return result_regions
     
     def get_available_regions(self) -> List[str]:
@@ -148,6 +143,20 @@ class ScreenSplitter:
         """
         return [name for name in self.basic_config.keys() 
                 if isinstance(self.basic_config[name], dict)]
+    
+    # 调试模式显示图像
+    def _show_debug_images(self, result_regions: Dict[str, np.ndarray]):
+         while True:
+                # 显示所有分割后的图像
+                for region_name, image in result_regions.items():
+                    window_name = f"original Split Region : {region_name}"
+                    cv2.imshow(window_name, image)
+                
+                # 检查是否按下 'q' 键
+                key = cv2.waitKey(100) & 0xFF  # 增加等待时间到100ms
+                if key == ord('q'):
+                    cv2.destroyAllWindows()
+                    break    
     
     def __del__(self):
         """析构函数：确保清理所有OpenCV窗口"""

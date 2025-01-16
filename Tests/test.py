@@ -1,56 +1,74 @@
 import cv2
 import numpy as np
+from pathlib import Path
 
-def fill_red_and_blue_with_black(image_path):
+def apply_mask_to_image(image_path):
     """
-    将图像中的红色区域和 R=255 且 B=255 的区域填充为纯黑色。
-
-    参数:
-        image_path (str): 输入图像的路径。
-
-    返回:
-        np.ndarray: 处理后的图像。
+    读取图片并应用遮罩
+    
+    Args:
+        image_path: 图片路径
     """
-    # 读取图像
+    # 读取图片
     image = cv2.imread(image_path)
     if image is None:
-        raise ValueError("无法读取图像，请检查图像路径是否正确。")
-    # 反转图像
-    image = cv2.bitwise_not(image)
-    # 将图像从 BGR 转换为 HSV 颜色空间
-    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        print("无法读取图片，请检查路径")
+        return
 
-    # 定义红色的范围（HSV 颜色空间）
-    lower_red = np.array([0, 50, 50])  # 红色的下限
-    upper_red = np.array([10, 255, 255])  # 红色的上限
+    # 获取图像尺寸
+    height, width = image.shape[:2]
 
-    # 创建一个掩码，标记红色区域
-    red_mask = cv2.inRange(hsv, lower_red, upper_red)
+    # 创建掩码（全白色）
+    mask = np.ones_like(image) * 255
 
-    # 创建一个掩码，标记 R=255 且 B=255 的区域
-    rb_mask = (image[:, :, 0] >= 255) & (image[:, :, 2] >= 255) & (image[:, :, 1] < 10)
+    # 在垂直方向上按规律填充黑色遮罩
+    # 0-15行不填充
+    # 16-35行填充（20像素高度）
+    # 36-51行不填充（16像素高度）
+    # 52-71行填充（20像素高度）
+    # 72-87行不填充（16像素高度）
+    # 以此类推...
+    y = 16  # 从第16行开始
+    while y < height:
+        # 填充20行
+        if y + 20 <= height:
+            pts = np.array([[0, y], [0, y+20], [width, y+20], [width, y]])
+            cv2.fillPoly(mask, [pts], (0, 0, 0))
+        y += 36  # 跳到下一个填充起点(20+16=36)
 
+    # 计算图片中心位置
+    center_x = width // 2
+    center_y = height // 2
+    
+    # 计算第二个遮罩区域的坐标
+    # 上下高度为16px，总宽度为42px
+    mask_half_height = 8  # 16/2
+    mask_half_width = 21  # 42/2
+    
+    # 计算遮罩区域的四个角点
+    pts2 = np.array([
+        [center_x - mask_half_width, center_y - mask_half_height],  # 左上
+        [center_x - mask_half_width, center_y + mask_half_height],  # 左下
+        [center_x + mask_half_width, center_y + mask_half_height],  # 右下
+        [center_x + mask_half_width, center_y - mask_half_height]   # 右上
+    ])
+    cv2.fillPoly(mask, [pts2], (0, 0, 0))
 
-    # 将红色区域和 R=255 且 B=255 的区域填充为黑色
-    image[red_mask == 255] = [0, 0, 0]  # 红色区域
-    image[rb_mask] = [0, 0, 0]  # R=255 且 B=255 的区域
+    # 将掩码应用到原图
+    masked_image = cv2.bitwise_and(image, mask)
 
-    # 显示处理后的图像
-    cv2.imshow("Processed Image", image)
-    cv2.waitKey(0)  # 等待按键
-    cv2.destroyAllWindows()  # 关闭窗口
+    # 显示结果
+    scale = 4  # 放大倍数
+    enlarged_original = cv2.resize(image, None, fx=scale, fy=scale, interpolation=cv2.INTER_NEAREST)
+    enlarged_masked = cv2.resize(masked_image, None, fx=scale, fy=scale, interpolation=cv2.INTER_NEAREST)
 
-    return image
+    cv2.imshow("1原始图片", enlarged_original)
+    cv2.imshow("2遮罩后的图片", enlarged_masked)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
 
-# 示例调用
-input_image_path = r"A:\1000Y_DATA_TEMP\data\original_screenshots\game_area\game_area_1736624839_1327827.png"  # 输入图像路径
-try:
-    processed_image = fill_red_and_blue_with_black(input_image_path)
-except Exception as e:
-    print(f"发生错误: {e}")
-
-
-
-
-
+if __name__ == "__main__":
+    # 测试代码
+    image_path = "B:/1000Y_DATA_TEMP/data\original/nearby_monster_name_1/1736969195_9716730.png"
+    apply_mask_to_image(image_path)
     

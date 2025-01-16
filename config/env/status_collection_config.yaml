@@ -1,10 +1,10 @@
 # 基础配置
 basic_config:
   name_zh: "采集系统基本配置"
-  base_output_dir: "A:/1000Y_DATA_TEMP/data"  # 基础输出目录  
+  base_output_dir: "B:/1000Y_DATA_TEMP/data"  # 基础输出目录  
   screenshots_dir: "original"  # 原始截图目录
   preprocessed_dir: "preprocessed"  # 预处理截图目录
-  state_dir: "states_json"  # 状态目录
+  state_dir: "states"  # 状态目录
   window_name: "笑傲千年" #窗口名字 支持模糊查找
   screen_capture:
       top: 0
@@ -16,7 +16,9 @@ basic_config:
   log_level: "DEBUG"  # 可选: DEBUG, INFO, WARNING, ERROR, CRITICAL
   console_log_level: "INFO"  # 控制台日志级别
   file_log_level: "DEBUG"   # 文件日志级别
-     
+
+
+
 # 标题区域
 title_area:
   Enabled: True
@@ -26,12 +28,12 @@ title_area:
     save_capture: True
   screen_split:  # 画面分割模块 
     Enabled: True 
-    coordinates: [32, 7, 899, 22]  # 使用列表表示坐标
+    coordinates: [243, 7, 899, 22]  # 使用列表表示坐标
+    save_split: False
   image_preprocess:  # 图像预处理模块  
     Enabled: True
   text_recognizer:  # OCR 模块
     Enabled: True  # 是否启用OCR
-    drop_score: 0.6  # 降低置信度阈值，保留更多可能的结果
   data_processor:  # 数据处理模块
     Enabled: True  # 是否启用数据处理
   state_manager:  # 状态管理模块
@@ -41,7 +43,7 @@ title_area:
   save_debug:  # 是否保存调试图像
     Enabled: False
 
-# 标题区域
+# 游戏主画面区
 game_area:
   Enabled: True
   name_zh: "游戏主画面区"  # 中文名映射
@@ -51,11 +53,229 @@ game_area:
   screen_split:  # 画面分割模块 
     Enabled: True 
     coordinates: [8, 31, 1032, 628]  # 使用列表表示坐标
+    save_split: True    # 保存裁切图像  *训练用图
   image_preprocess:  # 图像预处理模块  
     Enabled: True
   text_recognizer:  # OCR 模块
     Enabled: True  # 是否启用OCR
-    drop_score: 0.6  # 降低置信度阈值，保留更多可能的结果
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+    
+# 角色区域
+char_area:
+  game_area:
+  Enabled: True
+  name_zh: "角色区域"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [418, 268, 622, 472]  # 使用列表表示坐标
+    save_split: True    # 保存裁切图像  *训练用图
+  image_preprocess:  # 图像预处理模块  
+    Enabled: False
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR
+  data_processor:  # 数据处理模块
+    Enabled: False  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: False  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+ # 角色复活信息
+char_revival:
+  Enabled: True
+  name_zh: "角色复活信息"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [28, 170, 124, 245]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+ # 角色食物状态
+char_eat_food:
+  Enabled: True
+  name_zh: "角色食物状态"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [28, 413, 171, 499]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 近身寻怪名区域-1
+nearby_monster_name_1:  
+  Enabled: False
+  name_zh: "近身寻怪名区域-1"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [431, 303, 609, 391]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  *训练用图
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 近身寻怪名区域-2
+nearby_monster_name_2:  
+  Enabled: False
+  name_zh: "近身寻怪名区域-2"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [383, 267, 657, 426]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  *训练用图
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 近身寻怪图区域-1
+nearby_monster_img_1:  
+  Enabled: False
+  name_zh: "近身寻怪图区域-1"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [431, 282, 622, 472]  # 使用列表表示坐标
+    save_split: True    # 保存裁切图像  *训练用图
+  image_preprocess:  # 图像预处理模块  
+    Enabled: False
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR
+  data_processor:  # 数据处理模块
+    Enabled: False  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: False  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+
+# 聊天消息区域
+chat_messages:
+  Enabled: False
+  name_zh: "聊天消息区域"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [305, 677, 727, 764]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 激活技能区域
+active_skills:
+  Enabled: False
+  name_zh: "激活技能区域"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [46, 678, 190, 755]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: False
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: True
+  
+# 角色坐标区域
+char_coordinates:
+  Enabled: False
+  name_zh: "角色坐标区域"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [74, 776, 186, 793]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: False
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR   # 里面可以加 ocr_params:
   data_processor:  # 数据处理模块
     Enabled: True  # 是否启用数据处理
   state_manager:  # 状态管理模块
@@ -65,31 +285,307 @@ game_area:
   save_debug:  # 是否保存调试图像
     Enabled: True
 
-# 标题区域
-chat_messages:
-  Enabled: True
-  name_zh: "聊天消息区域"  # 中文名映射
+# 角色活力值
+char_vitality:
+  Enabled: False
+  name_zh: "角色活力值"  # 中文名映射
   screen_capture:  # 截图模块
     Enabled: True 
     save_capture: True
   screen_split:  # 画面分割模块 
     Enabled: True 
-    coordinates: [305, 677, 727, 764]  # 使用列表表示坐标
+    coordinates: [927, 754, 1004, 759]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
   image_preprocess:  # 图像预处理模块  
     Enabled: True
   text_recognizer:  # OCR 模块
-    Enabled: True  # 是否启用OCR
-    drop_score: 0.6  # 降低置信度阈值，保留更多可能的结果
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
   data_processor:  # 数据处理模块
     Enabled: True  # 是否启用数据处理
   state_manager:  # 状态管理模块
     Enabled: True  # 是否启用状态管理
   debug_mode: # 是否启用调试模式
-    Enabled: True 
+    Enabled: False 
   save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 角色内功值
+char_neigong:
+  Enabled: False
+  name_zh: "角色内功值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [927, 735, 1004, 741]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
     Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 角色头防值
+char_head:
+  Enabled: False
+  name_zh: "角色头防值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [927, 680, 1004, 686]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 角色手防值
+char_hand:
+  Enabled: False
+  name_zh: "角色手防值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [927, 698, 1004, 704]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 角色脚防值
+char_foot:
+  Enabled: False
+  name_zh: "角色脚防值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [927, 717, 1004, 723]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 角色脚防值
+char_foot:
+  Enabled: False
+  name_zh: "角色脚防值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [927, 717, 1004, 723]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 角色元气值
+char_qigong:
+  Enabled: False
+  name_zh: "角色元气值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [927, 662, 1004, 668]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 技能小经验值
+skill_exp_min:
+  Enabled: False
+  name_zh: "技能小经验值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [109, 659, 165, 663]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 技能大经验值
+skill_exp_max:
+  Enabled: False
+  name_zh: "技能大经验值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [109, 668, 165, 672]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 目标面板
+target_panel:
+  Enabled: False
+  name_zh: "目标面板"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [187, 356, 199, 369]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: False
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+  dependencies:  # 依赖关系
+    - target_hp  # 目标血量
+    - target_name  # 目标名字
+  control_type: "disable_when_false"  # 控制类型
+
+# 目标血量
+target_hp:
+  Enabled: False
+  name_zh: "目标血量"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [36, 366, 167, 382]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 目标名字
+target_name:
+  Enabled: False
+  name_zh: "目标名字"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [36, 366, 167, 382]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: False
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
 
 
 
-  
+
+#*****************示例***********************#
+# 血条区域 - 这个区域可能控制其他战斗相关的检测
+hp_bar:
+  # ... 其他配置 ...
+  dependencies:   # 依赖关系
+    - combat_status  # 战斗状态
+    - skill_cooldown  # 技能冷却
+  control_type: "disable_when_false"  # 控制类型
   
