@@ -19,8 +19,8 @@ screen_data:
     width: 1040
     height: 807
   fps: 5 
-  screenshots_file: "A:/1000Y_DATA_TEMP/data/raw/screenshots"
+  screenshots_file: "B:/1000Y_DATA_TEMP/data/screenshots"
   mouse_area: ((0, 0), (1040, 807)) 
-  actions_mouse_file: "A:/1000Y_DATA_TEMP/data/raw/actions/mouse_actions.json"
-  actions_keyboard_file: "A:/1000Y_DATA_TEMP/data/raw/actions/keyboard_actions.json"
+  actions_mouse_file: "B:/1000Y_DATA_TEMP/data/actions/mouse_actions.json"
+  actions_keyboard_file: "B:/1000Y_DATA_TEMP/data/actions/keyboard_actions.json"
   keys_to_monitor: [ 'tab', 'f5', 'f6', 'f7', 'f8', 'f9', 'f10', 'f11', 'f12','space', 'shift', 'ctrl', 'alt']

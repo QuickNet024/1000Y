@@ -45,9 +45,150 @@ class DataProcessor:
             'nearby_monster_name_2': self._preprocess_nearby_monster_name_1,  # 近身寻怪名区域-2
             'char_revival': self._preprocess_char_revival,  # 角色复活信息
             'char_eat_food': self._preprocess_char_eat_food,  # 角色食物状态
+            'char_be_attack': self._preprocess_char_be_attack,  # 角色被攻击状态
+            'char_blood_loss': self._preprocess_char_blood_loss,  # 角色掉血值    
 
         }   
         self.logger.info("=========================数据处理器初始化完成=========================")
+
+    # 角色被攻击状态
+    def _preprocess_char_be_attack(self, ocr_result: Dict, image: Optional[np.ndarray] = None) -> Dict[str, Any]:
+        """角色被攻击状态数据处理"""
+        try:
+            if image is None:
+                return {'status': False, 'screen_hp': 0}
+            
+            # 获取图像中心行
+            center_y = image.shape[0] // 2
+            center_row = image[center_y]
+            
+            # 检查是否存在黑色像素（表示检测到特定颜色）
+            has_black = np.any(center_row == 0)
+            
+            if not has_black:
+                return {'status': False, 'screen_hp': 0}
+            
+            # 从右向左查找第一个黑色像素点
+            width = image.shape[1]
+            first_black_x = width - 1
+            for x in range(width-1, -1, -1):
+                if center_row[x] == 0:  # 0表示黑色
+                    first_black_x = x
+                    break
+                
+            # 计算血量百分比
+            char_vitality = round((first_black_x + 1) / width * 100)  # 取整
+            self.logger.debug(f"角色活力值: {char_vitality}")
+            
+            return {'status': True, 'screen_hp': char_vitality}
+            
+        except Exception as e:
+            self.logger.error(f"处理角色活力值数据出错: {str(e)}")
+            return {"status": False, "screen_hp": 0}
+    
+    # 角色掉血值
+    def _preprocess_char_blood_loss(self, ocr_result: Dict, image: Optional[np.ndarray] = None) -> Dict[str, Any]:
+        """角色掉血值
+        处理格式："-123" 等数字文本
+        返回格式：{'status': True, 'blood_loss': 123} 或 {'status': False, 'blood_loss': 0}
+        """
+        try:
+            if not ocr_result or not isinstance(ocr_result, dict) or 'details' not in ocr_result:
+                return {'status': False, 'blood_loss': 0}
+            
+            self.logger.debug("=== 掉血值OCR结果 ===")
+            self.logger.debug(f"角色掉血值原始OCR结果: {repr(ocr_result)}")
+            
+            # 存储每行文本及其y坐标
+            text_boxes = []
+            
+            # 同一行文本的y坐标差异阈值
+            Y_THRESHOLD = 10
+            X_GAP_THRESHOLD = 15  # 数字之间的间隔阈值
+            
+            # 收集所有文本框
+            for detail in ocr_result['details']:
+                text = detail['text'].strip()
+                if text:
+                    box = detail['box']
+                    center_y = sum(point[1] for point in box) / 4
+                    left_x = min(point[0] for point in box)
+                    right_x = max(point[0] for point in box)
+                    text_boxes.append({
+                        'text': text,
+                        'center_y': center_y,
+                        'left_x': left_x,
+                        'right_x': right_x
+                    })
+            
+            if not text_boxes:
+                return {'status': False, 'blood_loss': 0}
+            
+            # 按y坐标排序
+            text_boxes.sort(key=lambda x: x['center_y'])
+            
+            # 合并同一行的文本
+            merged_lines = []
+            current_line = []
+            current_y = None
+            
+            for box in text_boxes:
+                if current_y is None:
+                    current_y = box['center_y']
+                    current_line.append(box)
+                else:
+                    if abs(box['center_y'] - current_y) <= Y_THRESHOLD:
+                        # 检查x方向上的间隔
+                        if current_line:
+                            last_box = current_line[-1]
+                            if box['left_x'] - last_box['right_x'] <= X_GAP_THRESHOLD:
+                                current_line.append(box)
+                            else:
+                                # 处理当前行
+                                if current_line:
+                                    current_line.sort(key=lambda x: x['left_x'])
+                                    line_text = ''.join(item['text'] for item in current_line)
+                                    merged_lines.append(line_text)
+                                # 开始新的一行
+                                current_line = [box]
+                        else:
+                            current_line.append(box)
+                    else:
+                        # 处理当前行
+                        if current_line:
+                            current_line.sort(key=lambda x: x['left_x'])
+                            line_text = ''.join(item['text'] for item in current_line)
+                            merged_lines.append(line_text)
+                        # 开始新的一行
+                        current_line = [box]
+                        current_y = box['center_y']
+            
+            # 处理最后一行
+            if current_line:
+                current_line.sort(key=lambda x: x['left_x'])
+                line_text = ''.join(item['text'] for item in current_line)
+                merged_lines.append(line_text)
+            
+            # 处理合并后的文本
+            for line in merged_lines:
+                # 移除所有非数字和负号的字符
+                cleaned_text = ''.join(char for char in line if char.isdigit() or char == '-')
+                if cleaned_text:
+                    try:
+                        # 如果有负号，去掉负号并转换为正数
+                        if cleaned_text.startswith('-'):
+                            blood_loss = int(cleaned_text[1:])
+                        else:
+                            blood_loss = int(cleaned_text)
+                        return {'status': True, 'blood_loss': blood_loss}
+                    except ValueError:
+                        continue
+            
+            return {'status': False, 'blood_loss': 0}
+            
+        except Exception as e:
+            self.logger.error(f"角色掉血值处理掉血值出错: {str(e)}")
+            return {'status': False, 'blood_loss': 0}
     
     # 角色食物状态
     def _preprocess_char_eat_food(self, ocr_result: Dict, image: Optional[np.ndarray] = None) -> Dict[str, Any]:
@@ -177,7 +318,7 @@ class DataProcessor:
             if state:  # 如果状态被设置（说明检测到了相关文本）
                 return {
                     'status': True,
-                    'state': state,
+                    'is_use': state,
                     'count': use_count,
                     'item_name': item_names
                 }
@@ -194,10 +335,12 @@ class DataProcessor:
         
         处理格式如: "剩下30秒重新站立" 或类似变体
         返回格式: {'char_revival': bool, 'time': int}
+        如果是复活状态,返回{'status': False, 'time': int}  = 死亡状态
+        如果是正常状态,返回{'status': True}
         """
         try:
             if not ocr_result:
-                return {'char_revival': False}
+                return {'status': True}
             
             self.logger.debug("=== 复活信息OCR结果 ===")
             self.logger.debug(f"原始OCR结果: {repr(ocr_result)}")
@@ -277,13 +420,13 @@ class DataProcessor:
                                 break
                 
                 if min_time != 999:
-                    return {'char_revival': True, 'time': min_time}
+                    return {'status': False, 'time': min_time}
             
-            return {'char_revival': False}
+            return {'status': True}
             
         except Exception as e:
             self.logger.error(f"处理复活信息出错: {str(e)}")
-            return {'char_revival': False}
+            return {'status': True}
     
     # 近身寻怪名区域-1
     def _preprocess_nearby_monster_name_1(self, ocr_result: Dict, image: Optional[np.ndarray] = None) -> Dict[str, Any]:
@@ -412,13 +555,13 @@ class DataProcessor:
 
             # 判断是否匹配成功
             if max_val >= 0.9:
-                return {'target_panel_status': True, 'target_panel_match_rate': round(max_val, 2)} 
+                return {'status': True, 'rate': round(max_val, 2)} 
             else:
-                return {'target_panel_status': False, 'target_panel_match_rate': round(max_val, 2)} 
+                return {'status': False, 'rate': round(max_val, 2)} 
             
         except Exception as e:
             self.logger.error(f"处理目标面板出错: {str(e)}")
-            return {'target_panel_status': False}  
+            return {'status': False}  
     
     # 处理技能经验_1
     def _preprocess_skill_exp_min(self, ocr_result: Dict, image: Optional[np.ndarray] = None) -> Dict[str, Any]:
@@ -977,3 +1120,5 @@ class DataProcessor:
         finally:
             self.current_region_name = None
             self.current_region_config = None 
+
+

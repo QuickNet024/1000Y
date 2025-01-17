@@ -20,4 +20,7 @@ class ConfigParser:
             raise FileNotFoundError(f"找不到配置文件: {file_path}")
             
         with open(file_path, 'r', encoding='utf-8') as f:
-            return yaml.safe_load(f) 
+            return yaml.safe_load(f)
+            
+    # 添加parse作为parse_yaml的别名
+    parse = parse_yaml 

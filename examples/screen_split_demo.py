@@ -335,7 +335,7 @@ class GameScreenProcessor:
         
         # 根据不同的控制类型处理依赖
         if control_type == "disable_when_false":
-            status_key = f"{region_name}_status"  # 例如: target_panel_status
+            status_key = f"status"  # 例如: target_panel_status
             if processed_data[region_name].get(status_key) == False:
                 # 关闭相关检测
                 for dep in dependencies:

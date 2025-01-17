@@ -92,7 +92,7 @@ char_area:
   save_debug:  # 是否保存调试图像
     Enabled: False
 
- # 角色复活信息
+ # 角色信息
 char_revival:
   Enabled: True
   name_zh: "角色复活信息"  # 中文名映射
@@ -115,6 +115,11 @@ char_revival:
     Enabled: False 
   save_debug:  # 是否保存调试图像
     Enabled: False
+  dependencies:  # 依赖关系
+    - char_be_attack  # 角色被攻击状态
+    - char_eat_food  # 角色食物状态
+    - char_blood_loss  # 角色掉血值
+  control_type: "disable_when_false"  # 控制类型
 
  # 角色食物状态
 char_eat_food:
@@ -126,6 +131,57 @@ char_eat_food:
   screen_split:  # 画面分割模块 
     Enabled: True 
     coordinates: [28, 413, 171, 499]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: True  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+
+# 角色被攻击状态
+char_be_attack:
+  Enabled: True
+  name_zh: "角色被攻击状态"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [505, 296, 537, 299]  # 使用列表表示坐标
+    save_split: False    # 保存裁切图像  
+  image_preprocess:  # 图像预处理模块  
+    Enabled: True
+  text_recognizer:  # OCR 模块
+    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
+  data_processor:  # 数据处理模块
+    Enabled: True  # 是否启用数据处理
+  state_manager:  # 状态管理模块
+    Enabled: True  # 是否启用状态管理
+  debug_mode: # 是否启用调试模式
+    Enabled: False 
+  save_debug:  # 是否保存调试图像
+    Enabled: False
+  dependencies:  # 依赖关系
+    - char_blood_loss  # 角色掉血值
+  control_type: "disable_when_false"  # 控制类型
+
+# 角色掉血值
+char_blood_loss:
+  Enabled: True
+  name_zh: "角色掉血值"  # 中文名映射
+  screen_capture:  # 截图模块
+    Enabled: True 
+    save_capture: True
+  screen_split:  # 画面分割模块 
+    Enabled: True 
+    coordinates: [501, 276, 539, 287]  # 使用列表表示坐标
     save_split: False    # 保存裁切图像  
   image_preprocess:  # 图像预处理模块  
     Enabled: True
@@ -283,7 +339,7 @@ char_coordinates:
   debug_mode: # 是否启用调试模式
     Enabled: False 
   save_debug:  # 是否保存调试图像
-    Enabled: True
+    Enabled: False
 
 # 角色活力值
 char_vitality:
@@ -503,7 +559,7 @@ skill_exp_max:
 
 # 目标面板
 target_panel:
-  Enabled: False
+  Enabled: True
   name_zh: "目标面板"  # 中文名映射
   screen_capture:  # 截图模块
     Enabled: True 
@@ -531,7 +587,7 @@ target_panel:
 
 # 目标血量
 target_hp:
-  Enabled: False
+  Enabled: True
   name_zh: "目标血量"  # 中文名映射
   screen_capture:  # 截图模块
     Enabled: True 
@@ -555,7 +611,7 @@ target_hp:
 
 # 目标名字
 target_name:
-  Enabled: False
+  Enabled: True
   name_zh: "目标名字"  # 中文名映射
   screen_capture:  # 截图模块
     Enabled: True 

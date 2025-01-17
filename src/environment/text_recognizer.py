@@ -111,13 +111,15 @@ class TextRecognizer:
                 'enable_mkldnn': True,
                 'cpu_threads': 4,
                 'rec_char_type': 'ch',
+                # 'det_model_dir': 'F:/2025Projects/1000Y/models/PP-OCRv4_det', 
                 'rec_model_dir': "F:/2025Projects/1000Y/models/ch_PP-OCRv4_det",
                 'drop_score': 0.5,
                 'use_space_char': True,
-                'det_box_thresh': 0.7,
-                'det_unclip_ratio': 1.3,
+                'det_box_thresh': 0.2,
+                'det_unclip_ratio': 1.0,
+                'use_dilation': False,
+                'det_db_score_mode': 'fast',
                 # 新增参数，优化文本行检测
-                'det_db_score_mode': 'fast',    # 快速模式
                 #'det_db_use_dilation': True,    # 使用膨胀，有助于连接断开的文本
                 'det_east_score_thresh': 0.8,   # EAST文本检测分数阈值
                 'det_east_cover_thresh': 0.1,   # EAST文本检测覆盖阈值

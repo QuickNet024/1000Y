@@ -39,10 +39,90 @@ class ImagePreprocessor:
             'nearby_monster_name_2': self._preprocess_nearby_monster_name_1,  # 近身寻怪名区域-2
             'char_revival': self._preprocess_char_revival,  # 角色复活信息
             'char_eat_food': self._preprocess_char_revival,  # 角色食物状态
+            'char_be_attack': self._preprocess_char_be_attack,  # 角色被攻击状态
+            'char_blood_loss': self._preprocess_char_blood_loss,  # 角色掉血值
             # 可以继续添加更多区域特定的处理方法...
         }
         self.logger.info("=========================图像预处理器初始化完成=========================    ")
-    
+
+    # 角色掉血值预处理
+    def _preprocess_char_blood_loss(self, image: np.ndarray) -> np.ndarray:
+        """角色掉血值预处理"""
+        try:
+            # 定义目标颜色 (BGR格式)
+            target_color = np.array([0, 0, 255])  # OpenCV中是BGR顺序
+            # 定义颜色容差
+            tolerance = 5
+            
+            # 创建颜色掩码
+            lower_bound = target_color - tolerance
+            upper_bound = target_color + tolerance
+            mask = cv2.inRange(image, lower_bound, upper_bound)
+            
+            # 创建全白图像
+            result = np.ones_like(image) * 255
+            
+            # 将掩码区域设为黑色
+            result[mask > 0] = [0, 0, 0]
+            
+            # 转换为灰度图
+            gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+            
+            # 二值化处理
+            _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+            
+            # 获取原始图像的尺寸
+            original_height, original_width = binary.shape[:2]
+
+            # 定义放大比例
+            scale_factor = 4.0  # 例如，放大2倍
+
+            # 计算新的尺寸
+            new_width = int(original_width * scale_factor)
+            new_height = int(original_height * scale_factor)
+
+            # 使用cv2.resize()进行图像放大
+            resized_image = cv2.resize(binary, (new_width, new_height), interpolation=cv2.INTER_LINEAR)
+
+            return resized_image
+            
+        except Exception as e:
+            self.logger.error(f"预处理角色掉血值图像出错: {str(e)}")
+            return image
+
+    # 角色被攻击状态预处理
+    def _preprocess_char_be_attack(self, image: np.ndarray) -> np.ndarray:
+        """角色被攻击状态预处理
+        处理图片，只保留特定颜色(R=176, G=40, B=40)并转换为黑白图
+        """
+        try:
+            # 定义目标颜色 (BGR格式)
+            target_color = np.array([40, 40, 176])  # OpenCV中是BGR顺序
+            # 定义颜色容差
+            tolerance = 5
+            
+            # 创建颜色掩码
+            lower_bound = target_color - tolerance
+            upper_bound = target_color + tolerance
+            mask = cv2.inRange(image, lower_bound, upper_bound)
+            
+            # 创建全白图像
+            result = np.ones_like(image) * 255
+            
+            # 将掩码区域设为黑色
+            result[mask > 0] = [0, 0, 0]
+            
+            # 转换为灰度图
+            gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+            
+            # 二值化处理
+            _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+            
+            return binary
+            
+        except Exception as e:
+            self.logger.error(f"预处理角色被攻击状态图像出错: {str(e)}")
+            return image
     
     # 角色复活信息预处理
     def _preprocess_char_revival(self, image: np.ndarray) -> np.ndarray:
