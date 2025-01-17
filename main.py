@@ -2,14 +2,10 @@ import time
 import argparse
 import logging
 from pathlib import Path
+from src.utils.config_parser import ConfigParser
 from src.data.collector import DataCollector
 from src.agents.rl_agent import RLAgent
-
-from examples.screen_split_demo import GameScreenProcessor
-from src.utils.config_manager import ConfigManager
-from src.utils.config_parser import ConfigParser
 from src.environment.window_manager import WindowManager
-from src.utils.logger_manager import LoggerManager
 
 logger = logging.getLogger(__name__)
 
@@ -76,26 +72,7 @@ def main():
         config = ConfigParser.parse(args.config)
         
         # 设置日志级别 - 在加载配置后立即设置
-        # 初始化窗口管理器并移动窗口
-        # 配置文件路径
-        basic_config_path = "config/env/status_collection_config.yaml"
-
-        # 使用配置管理器获取日志配置
-        config_manager = ConfigManager(basic_config_path)
-        logger_config = config_manager.get_logger_config()
-        
-        # 初始化主程序日志（只初始化一次）
-        logger = LoggerManager(
-            name='Main',
-            **logger_config
-        ).get_logger()
-        
-        # 创建处理器
-        processor = GameScreenProcessor(
-            config_manager=config_manager,      # 传递配置管理器
-            logger=logger                       # 直接传递logger实例       
-        )
-        # setup_logging(config)
+        setup_logging(config)
         
         logger.info(f"成功加载配置文件: {args.config}")
     except Exception as e:
@@ -110,18 +87,15 @@ def main():
     top = monitor.get("top")
     left = monitor.get("left")
 
-    
-
-    
-    try:
-        
-        window_manager = WindowManager(window_name)
-        logger.info(f"成功找到游戏窗口: {window_manager.window_title}")
-        window_manager.move_window(left, top)
-        logger.info(f"已将窗口移动到坐标: ({left}, {top})")
-    except Exception as e:
-        logger.error(f"窗口操作失败: {e}")
-        raise
+    # 初始化窗口管理器并移动窗口
+    # try:
+    #     window_manager = WindowManager(window_name)
+    #     logger.info(f"成功找到游戏窗口: {window_manager.window_title}")
+    #     window_manager.move_window(left, top)
+    #     logger.info(f"已将窗口移动到坐标: ({left}, {top})")
+    # except Exception as e:
+    #     logger.error(f"窗口操作失败: {e}")
+    #     raise
 
     # 根据模式执行相应功能
     try:

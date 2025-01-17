@@ -230,6 +230,20 @@ class ImagePreprocessor:
     def _preprocess_target_hp(self, image: np.ndarray) -> np.ndarray:
         """
         目标血量预处理
+        
+        处理步骤:
+        1. 增强对比度
+        2. 转换到HSV颜色空间
+        3. 创建红色掩码(包括多个红色范围)
+        4. 应用形态学操作
+        5. 处理采样区域
+        6. 反转图像
+        
+        Args:
+            image: 输入图像
+            
+        Returns:
+            np.ndarray: 处理后的二值图像
         """
         # 增强对比度
         alpha = 1.3
@@ -239,6 +253,8 @@ class ImagePreprocessor:
         # 转换到HSV颜色空间
         hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
+        # 原有的红色范围(注释但保留)
+        """
         # 定义红色的HSV范围
         lower_red1 = np.array([0, 100, 100])
         upper_red1 = np.array([10, 255, 255])
@@ -249,6 +265,25 @@ class ImagePreprocessor:
         mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
         mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
         red_mask = mask1 + mask2
+        """
+
+        # 新增的红色范围(包括R值59和39的情况)
+        lower_red1 = np.array([0, 100, 100])
+        upper_red1 = np.array([10, 255, 255])
+        lower_red2 = np.array([160, 100, 100])
+        upper_red2 = np.array([180, 255, 255])
+        # 新增的红色范围
+        lower_red3 = np.array([0, 50, 50])  # 适配较暗的红色(R=59)
+        upper_red3 = np.array([10, 255, 255])
+        lower_red4 = np.array([0, 30, 30])  # 适配更暗的红色(R=39)
+        upper_red4 = np.array([10, 255, 255])
+
+        # 创建红色掩码(包含所有范围)
+        mask1 = cv2.inRange(hsv, lower_red1, upper_red1)
+        mask2 = cv2.inRange(hsv, lower_red2, upper_red2)
+        mask3 = cv2.inRange(hsv, lower_red3, upper_red3)
+        mask4 = cv2.inRange(hsv, lower_red4, upper_red4)
+        red_mask = mask1 + mask2 + mask3 + mask4
 
         # 应用形态学操作
         kernel = np.ones((3,3), np.uint8)

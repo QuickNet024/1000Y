@@ -3,11 +3,12 @@ from pathlib import Path
 from typing import Dict, Any
 
 class ConfigManager:
-    def __init__(self, config_path: Path):
+    def __init__(self, config_path: Path, action_config_path: Path = None):
         """初始化配置管理器
         
         Args:
             config_path: 配置文件路径
+            action_config_path: 动作配置文件路径,可选
         """
         self.config = self._load_config(config_path)
         self.basic_config = self.config.get('basic_config')
@@ -15,6 +16,16 @@ class ConfigManager:
             key: value for key, value in self.config.items()
             if key != 'basic_config'
         }
+        
+        # 初始化动作配置
+        self.action_config = {}
+        if action_config_path:
+            try:
+                self.action_config = self._load_config(action_config_path)
+            except Exception as e:
+                # 如果加载失败,使用空字典,避免影响其他功能
+                print(f"加载动作配置文件失败: {e}")
+
     def _load_config(self, config_path: Path) -> Dict[str, Any]:
         """加载配置文件
         

@@ -1,0 +1,190 @@
+# 游戏动作配置
+game_id: "NO_001"  # 游戏标识
+game_name: "笑傲千年"
+control_range: [1040, 807]
+
+# 基础动作配置
+basic_actions:
+  move:
+    type: "mouse"
+    center_point: [520, 346]  # 屏幕中心点
+    radius: 48  # 移动半径
+    directions:
+      上: 
+        angle: 90
+        keys: ["w"]  # 键盘模式下使用
+      右上:
+        angle: 45
+        keys: ["w", "d"]
+      右:
+        angle: 0
+        keys: ["d"]
+      右下:
+        angle: 315
+        keys: ["s", "d"]
+      下:
+        angle: 270
+        keys: ["s"]
+      左下:
+        angle: 225
+        keys: ["s", "a"]
+      左:
+        angle: 180
+        keys: ["a"]
+      左上:
+        angle: 135
+        keys: ["w", "a"]
+
+  # 攻击配置
+  attack:
+    type: "keyboard_mouse"  # 或者改成 "multi_mode" 更直观
+    modes:
+      monster:  # 打怪模式
+        mouse_only:  # 模式1：纯鼠标
+          button: "left"
+          clicks: 1
+        keyboard_mouse:  # 模式2：键鼠组合
+          modifier_key: "shift"
+          button: "left"
+          clicks: 1
+      
+      player:  # PVP模式
+        mouse_only:  # 模式1：纯鼠标
+          button: "left"
+          clicks: 1
+        keyboard_mouse:  # 模式2：键鼠组合
+          modifier_key: "ctrl"
+          button: "left"
+          clicks: 1
+    default_mode: "keyboard_mouse"  # 默认使用键鼠组合模式
+
+  # 技能配置  
+  skills:
+    type: "keyboard"
+    bindings:
+      步法: "F5"
+      心法: "F10"
+      护体: "F12"
+      近战武功-1: "F6"
+      近战武功-2: "F7"
+      近战武功-3: "F8" 
+      远程武功: "F9"
+      辅助武功: "F11"
+
+  # 其他技能配置
+  other_skills:
+    type: "keyboard"  
+    bindings:
+      战斗: "F2"
+      打坐: "F3"
+      招呼: "F4" 
+
+  # 物品配置
+  items:
+    type: "keyboard"
+    bindings:
+      item_1: ["ctrl", "1"] # 物品1 - 加血量-新手生药-小药水
+      item_2: ["ctrl", "2"] # 物品2 - 加内功-新手汤药
+      item_3: ["ctrl", "3"] # 物品3 - 加血量-其他生药-中药水
+      item_4: ["ctrl", "4"] # 物品4 - 加元气
+      item_5: ["ctrl", "5"] # 物品5 - 加三防
+      item_6: ["ctrl", "6"] # 物品6 - 加血量-其他白酒-大药水
+
+  # 目标选择配置
+  target_selection:
+    type: "mouse"  # 支持键盘和鼠标两种模式
+    # 键盘模式配置
+    keyboard:
+      bindings:
+        next_target: "tab"          # 切换下一个目标
+        previous_target: "tab"  # 切换上一个目标
+        nearest_target: "tab"         # 选择最近目标
+        cancel_target: "esc"        # 取消目标选择
+    # 鼠标模式配置
+    mouse:
+      button: "left"  # 使用左键点选
+      clicks: 1       # 单击
+    default_mode: "mouse"  # 默认使用鼠标模式
+
+# 组合动作配置
+combo_actions:
+  quick_attack:
+    sequence:
+      - {action: "move", direction: "up"}
+      - {action: "attack", type: "normal"}
+      - {delay: 0.1}
+  
+  skill_combo:
+    sequence:
+      - {action: "skills", key: "skill_1"}
+      - {action: "move", direction: "back"}
+      - {delay: 0.2}
+      - {action: "skills", key: "skill_2"}
+
+# UI交互配置
+ui_actions:
+  menu:
+    type: "keyboard"
+    key: "esc"
+  # 角色配置
+  character:
+    type: "keyboard"
+    key: ["alt", "1"] 
+  # 背包配置
+  inventory:
+    type: "keyboard"
+    key: ["alt", "2"]
+  # 技能配置
+  skills:
+    type: "keyboard"
+    key: ["alt", "3"]
+  # 其他技能配置
+  other_skills:
+    type: "keyboard"
+    key: ["alt", "4"]
+  # 公会配置
+  guild:
+    type: "keyboard"
+    key: ["alt", "5"]
+  # 任务配置
+  mission:
+    type: "keyboard"
+    key: ["alt", "6"]
+  # 商城配置
+  shop:
+    type: "keyboard"
+    key: ["alt", "7"] 
+  # 辅助配置
+  assistant:
+    type: "keyboard"
+    key: ["alt", "8"]
+  # 地图配置  
+  map:
+    type: "keyboard"
+    key: ["alt", "m"]
+
+
+# 添加动作记录配置
+action_recording:
+  enabled: true
+  save_dir: "B:/1000Y_DATA_TEMP/data/action_records"  # 动作记录保存目录
+  format: "json"  # 记录格式
+  record_interval: 0.1  # 记录间隔(秒)
+  
+# 添加强化学习相关配置
+rl_config:
+  action_space:
+    # 离散动作空间定义
+    discrete_actions:
+      - name: "move"
+        values: {"up": 0, "up_right": 1, "right": 2, "down_right": 3, "down": 4, "down_left": 5, "left": 6, "up_left": 7}
+      - name: "attack"
+        values: {"normal": 0, "skill_1": 1}
+      - name: "skills"
+        values: {"skill_1": 0, "skill_2": 1, "skill_3": 2, "skill_4": 3, "ultimate": 4}
+    
+    # 连续动作空间定义(如果需要)
+    continuous_actions:
+      mouse_move:
+        x_range: [-100, 100]  # 相对移动范围
+        y_range: [-100, 100]
