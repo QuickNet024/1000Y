@@ -305,11 +305,11 @@ class GameScreenProcessor:
                 self.handle_region_dependencies(region_name, processed_data)
 
                 
-                # 9. 状态更新
-                # 在所有区域处理完成后，更新整体状态 
-                if any(self.area_config[r].get('state_manager', {}).get('Enabled') 
-                       for r in regions_list):
-                    self.update_state(processed_data, timestamp)
+            # 9. 状态更新
+            # 在所有区域处理完成后，更新整体状态 
+            if any(self.area_config[r].get('state_manager', {}).get('Enabled') 
+                    for r in regions_list):
+                self.update_state(processed_data, timestamp)
                 
             self.logger.info("帧处理完成")
             return processed_data

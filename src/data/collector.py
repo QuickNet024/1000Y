@@ -187,7 +187,7 @@ class DataCollector:
             'text_recognizer': (TextRecognizer, ['basic_config', 'area_config']),
             'data_processor': (DataProcessor, ['basic_config', 'area_config']),
             'state_manager': (StateManager, ['basic_config', 'area_config']),
-            'action_executor': (ActionExecutor, ['basic_config'])
+            # 'action_executor': (ActionExecutor, ['basic_config'])
         }
         
         for name, (processor_class, config_args) in processors.items():
@@ -416,15 +416,30 @@ class DataCollector:
         
         Args:
             processed_data: 处理后的数据
-            timestamp: 状态更新的时间戳
-            
-        状态更新可能包括:
-        - 游戏场景状态
-        - 角色状态
-        - 目标状态
-        - 任务状态等
+            timestamp: 时间戳
         """
-        self.state_manager.update(processed_data, timestamp)
+        try:
+            # # 过滤掉numpy数组等不可序列化的数据
+            # serializable_data = {}
+            # for region_name, data in processed_data.items():
+            #     # 检查是否为numpy数组或其他图像数据
+            #     if isinstance(data, np.ndarray):
+            #         self.logger.debug(f"跳过区域 {region_name} 的图像数据")
+            #         continue
+            #     # 检查字典中是否包含numpy数组
+            #     if isinstance(data, dict) and any(isinstance(v, np.ndarray) for v in data.values()):
+            #         self.logger.debug(f"跳过区域 {region_name} 的包含图像的数据")
+            #         continue
+            #     # 保留可序列化的数据
+            #     serializable_data[region_name] = data
+
+            # # 只有当有可序列化的数据时才更新状态
+            # if serializable_data:
+                self.state_manager.update(processed_data, timestamp)
+            
+        except Exception as e:
+            self.logger.error(f"更新状态失败: {e}")
+            raise
     # 10. 获取当前状态
     def get_current_state(self) -> dict:
         """
@@ -554,25 +569,21 @@ class DataCollector:
                 # 8. 处理区域依赖关系
                 self.handle_region_dependencies(region_name, processed_data)
 
-                
-                # 9. 状态更新
-                # 在所有区域处理完成后，更新整体状态 
-                if any(self.area_config[r].get('state_manager', {}).get('Enabled') 
-                       for r in regions_list):
-                    self.update_state(processed_data, timestamp)
-                
-            # 在返回之前过滤数据 state_manager 关闭状态的数据就不返回了。
-            filtered_data = {}
-            for region_name, data in processed_data.items():
-                # 检查该区域的state_manager是否启用
-                if self.area_config.get(region_name, {}).get('state_manager', {}).get('Enabled', False):
-                    filtered_data[region_name] = data
-                    self.logger.debug(f"保留区域 {region_name} 的数据用于状态管理")
-                else:
-                    self.logger.debug(f"区域 {region_name} 的state_manager未启用,跳过其数据")
+            # 9. 状态更新 (移到循环外)
+            # 在所有区域处理完成后，先过滤掉未启用状态管理的区域数据
+            enabled_states = {
+                region_name: data 
+                for region_name, data in processed_data.items()
+                if self.area_config.get(region_name, {}).get('state_manager', {}).get('Enabled', False)
+            }
+            
+            # 更新状态管理器中的数据
+            if enabled_states:
+                self.update_state(enabled_states, timestamp)
             
             self.logger.info("帧处理完成")
-            return filtered_data  # 返回过滤后的数据
+            
+            return processed_data  # 返回所有处理数据，而不是只返回 enabled_states
             
         except Exception as e:
             self.logger.error(f"处理帧时出错: {e}", exc_info=True)
@@ -588,36 +599,20 @@ class DataCollector:
             **params: 动作参数
         """
         try:
-            # 根据动作类型执行相应操作
-            if action_type == 'key':  # 键盘按键操作
+            if action_type == 'key':
                 if isinstance(params.get('key'), list):
-                    # 如果key参数是列表,说明是组合键,调用组合键执行方法
-                    # 例如: ['ctrl', 'c'] 表示 Ctrl+C
                     self.action_executor.press_combination(**params)
                 else:
-                    # 单个按键操作,直接调用按键执行方法
-                    # 例如: 'enter' 表示回车键
                     self.action_executor.press_key(**params)
-                    
-            elif action_type == 'mouse_move':  # 鼠标移动操作
-                # 移动鼠标到指定坐标
-                # params需包含: x, y 坐标值
+            elif action_type == 'mouse_move':
                 self.action_executor.move_mouse(**params)
-                
-            elif action_type == 'mouse_click':  # 鼠标点击操作
-                # 在指定位置点击鼠标
-                # params可包含: x, y 坐标, button 按键类型, clicks 点击次数
+            elif action_type == 'mouse_click':
                 self.action_executor.click_mouse(**params)
-                
             else:
-                # 未知的动作类型,记录警告日志
                 self.logger.warning(f"未知的动作类型: {action_type}")
-                
         except Exception as e:
-            # 动作执行出现异常时记录错误日志
             self.logger.error(f"动作执行失败: {e}")
 
-    # 12. 执行动作序列  
     def execute_actions(self, actions: List[Dict]):
         """
         执行动作序列

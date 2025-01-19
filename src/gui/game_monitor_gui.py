@@ -17,7 +17,7 @@ class GameMonitorGUI(QMainWindow):
             if name != 'basic_config' 
             and isinstance(self.config_manager.config[name], dict)
             and self.config_manager.config[name].get('Enabled', False)  # 只显示启用的区域
-            and self.config_manager.config[name].get('state_manager', {}).get('Enabled', True)  # 显示启用了状态管理的区域
+            # and self.config_manager.config[name].get('state_manager', {}).get('Enabled', True)  # 显示启用了状态管理的区域
         ]
         
         self.setup_ui()

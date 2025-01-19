@@ -1,6 +1,0 @@
-[2025-01-18 01:43:29] - ActionExecutor - INFO - 动作执行器初始化完成 - 游戏: NO_001
-[2025-01-18 01:43:34] - ActionExecutor - DEBUG - 点击鼠标 right 在当前位置, 1次
-[2025-01-18 01:43:36] - ActionExecutor - DEBUG - 移动鼠标到: (501, 315), 持续时间: 0.2秒
-[2025-01-18 01:43:36] - ActionExecutor - DEBUG - 点击鼠标 right 在当前位置, 1次
-[2025-01-18 01:43:37] - ActionExecutor - DEBUG - 点击鼠标 right 在 (401, 215), 1次
-[2025-01-18 01:43:39] - ActionExecutor - DEBUG - 点击鼠标 right 在当前位置, 2次

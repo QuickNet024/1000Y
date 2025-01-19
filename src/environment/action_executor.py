@@ -539,7 +539,7 @@ class ActionExecutor:
             
             # 如果没有指定模式，使用默认模式
             if mode is None:
-                mode = attack_config.get('default_mode', 'mouse_only')
+                mode = attack_config.get('default_mode', 'keyboard_mouse')
             
             # 获取目标类型的配置
             target_config = attack_config['modes'].get(target_type)
@@ -591,6 +591,7 @@ class ActionExecutor:
 
     def attack_monster(self, mode: Optional[str] = None):
         """攻击怪物的快捷方法"""
+
         return self.execute_attack('monster', mode)
     
     def attack_player(self, mode: Optional[str] = None):
@@ -673,9 +674,9 @@ class ActionExecutor:
         try:
             target_config = self.action_config['basic_actions']['target_selection']
             
-            # 如果没有指定模式，使用默认模式
-            if mode is None:
-                mode = target_config.get('default_mode', 'mouse')
+            # 如果没有指定模式，使用配置文件中的默认模式
+            mode = mode or target_config.get('default_mode', 'mouse')
+            target_type = target_config.get('type', 'mouse')
             
             # 鼠标模式
             if mode == 'mouse':
@@ -687,7 +688,6 @@ class ActionExecutor:
                         button=mouse_config['button'],
                         clicks=mouse_config['clicks']
                     )
-                    self.logger.debug(f"鼠标选择目标: ({x}, {y})")
                     return True
                 else:
                     self.logger.error("鼠标模式需要提供坐标")
@@ -827,13 +827,13 @@ if __name__ == "__main__":
     print("开始执行!")
 
     try:
-        # 测试代码...
-        action_executor.execute_move("上")
-        time.sleep(2)
-        action_executor.execute_move("右上")
-        time.sleep(2)
-        action_executor.execute_skill("步法")
-        time.sleep(2)
-
+        # 测试目标选择
+        action_executor.select_target(mode='keyboard', selection_type='nearest')
+        time.sleep(1)
+        
+        # 测试攻击
+        action_executor.attack_monster(mode='keyboard_mouse')
+        time.sleep(1)
+        
     finally:
         action_executor.save_action_history()

@@ -1,18 +1,34 @@
+# 配置文件版本
+version: "1.0.0"
+
 # 游戏动作配置
 game_id: "NO_001"  # 游戏标识
 game_name: "笑傲千年"
-control_range: [1040, 807]
+
+# 控制范围
+control_range:
+  x: [8, 1037]
+  y: [31, 798]
+
+# 动作记录配置
+action_recording:
+  enabled: true
+  save_dir: "B:/1000Y_DATA_TEMP/data/input_records/"
+  format: "json"
+  record_interval: 0.1
 
 # 基础动作配置
 basic_actions:
+  # 移动配置
   move:
     type: "mouse"
-    center_point: [520, 346]  # 屏幕中心点
-    radius: 48  # 移动半径
+    center_point: [520, 365]
+    coordinate_Screen_ratio: [48, 36]
+    radius: 48
     directions:
-      上: 
+      上:
         angle: 90
-        keys: ["w"]  # 键盘模式下使用
+        keys: ["w"]
       右上:
         angle: 45
         keys: ["w", "d"]
@@ -34,8 +50,8 @@ basic_actions:
       左上:
         angle: 135
         keys: ["w", "a"]
-
-  # 攻击配置
+    default_mode: "mouse"
+   # 攻击配置
   attack:
     type: "keyboard_mouse"  # 或者改成 "multi_mode" 更直观
     modes:
@@ -62,9 +78,9 @@ basic_actions:
   skills:
     type: "keyboard"
     bindings:
-      步法: "F5"
-      心法: "F10"
-      护体: "F12"
+      步法武功: "F5"
+      心法武功: "F10"
+      护体武功: "F12"
       近战武功-1: "F6"
       近战武功-2: "F7"
       近战武功-3: "F8" 
@@ -105,8 +121,7 @@ basic_actions:
       button: "left"  # 使用左键点选
       clicks: 1       # 单击
     default_mode: "mouse"  # 默认使用鼠标模式
-
-# 组合动作配置
+ # 组合动作配置
 combo_actions:
   quick_attack:
     sequence:
@@ -119,58 +134,225 @@ combo_actions:
       - {action: "skills", key: "skill_1"}
       - {action: "move", direction: "back"}
       - {delay: 0.2}
-      - {action: "skills", key: "skill_2"}
-
-# UI交互配置
-ui_actions:
-  menu:
-    type: "keyboard"
-    key: "esc"
-  # 角色配置
-  character:
-    type: "keyboard"
-    key: ["alt", "1"] 
-  # 背包配置
-  inventory:
-    type: "keyboard"
-    key: ["alt", "2"]
-  # 技能配置
-  skills:
-    type: "keyboard"
-    key: ["alt", "3"]
-  # 其他技能配置
-  other_skills:
-    type: "keyboard"
-    key: ["alt", "4"]
-  # 公会配置
-  guild:
-    type: "keyboard"
-    key: ["alt", "5"]
-  # 任务配置
-  mission:
-    type: "keyboard"
-    key: ["alt", "6"]
-  # 商城配置
-  shop:
-    type: "keyboard"
-    key: ["alt", "7"] 
-  # 辅助配置
-  assistant:
-    type: "keyboard"
-    key: ["alt", "8"]
-  # 地图配置  
-  map:
-    type: "keyboard"
-    key: ["alt", "m"]
+      - {action: "skills", key: "skill_2"} 
 
 
-# 添加动作记录配置
-action_recording:
-  enabled: true
-  save_dir: "B:/1000Y_DATA_TEMP/data/action_records"  # 动作记录保存目录
-  format: "json"  # 记录格式
-  record_interval: 0.1  # 记录间隔(秒)
+
+# 监控的按键列表
+key_mappings:
+  action_dict:
+    key_press: 0
+    key_release: 1
+    mouse_click: 2
+    mouse_move: 3
+    mouse_scroll: 4
+    mouse_wheel: 5
   
+  function_keys:
+    F2: 0
+    F3: 1
+    F4: 2
+    F5: 3
+    F6: 4
+    F7: 5
+    F8: 6
+    F9: 7
+    F10: 8
+    F11: 9
+    F12: 10
+  
+  modifier_keys:
+    shift: 0
+    ctrl: 1
+    alt: 2
+  
+  number_keys:
+    "1": 0
+    "2": 1
+    "3": 2
+    "4": 3
+    "5": 4
+    "6": 5
+    "7": 6
+    "8": 7
+  
+  mouse_buttons:
+    left: 0
+    right: 1
+    x1: 3
+    x2: 4
+    
+  key_dict:
+    w: 0
+    a: 1
+    s: 2
+    d: 3
+    m: 4
+    tab: 5
+
+# 组合键配置
+key_combo_dict:
+  # 攻击组合键
+  shift_mouse_click: 37  # 攻击怪物
+  ctrl_mouse_click: 38   # 攻击玩家
+  
+  # 物品快捷键
+  ctrl_1: 22  # 小药水
+  ctrl_2: 23  # 内力药水
+  ctrl_3: 24  # 中药水
+  ctrl_4: 25  # 元气药水
+  ctrl_5: 26  # 三防药水
+  ctrl_6: 27  # 大药水
+  
+  # UI面板快捷键
+  alt_1: 28  # 角色面板
+  alt_2: 29  # 物品面板
+  alt_3: 30  # 武功面板
+  alt_4: 31  # 技能面板
+  alt_5: 32  # 门派面板
+  alt_6: 33  # 任务面板
+  alt_7: 34  # 商城面板
+  alt_8: 35  # 助手面板
+  alt_m: 36  # 地图面板
+  
+  # 移动组合键
+  w_a: 11    # 左上
+  w_d: 5     # 右上
+  s_a: 9     # 左下
+  s_d: 7     # 右下
+
+# 动作映射表
+action_mapping:
+  "0": ["mouse_left_click"]  # 选定目标
+  "1": ["tab"]               # 最近目标
+  "2": ["tab"]               # 切换目标
+  "3": ["F2"]                # 战斗状态
+  "4": ["w"]                 # 上
+  "5": ["w", "d"]            # 右上
+  "6": ["d"]                 # 右
+  "7": ["s", "d"]            # 右下
+  "8": ["s"]                 # 下
+  "9": ["s", "a"]            # 左下
+  "10": ["a"]                # 左
+  "11": ["w", "a"]           # 左上
+  "12": ["F6"]               # 近战武功-1
+  "13": ["F7"]               # 近战武功-2
+  "14": ["F8"]               # 近战武功-3
+  "15": ["F9"]               # 远程武功
+  "16": ["F11"]              # 辅助武功
+  "17": ["F5"]               # 步法武功
+  "18": ["F10"]              # 心法武功
+  "19": ["F12"]              # 护体武功
+  "20": ["F3"]               # 打坐状态
+  "21": ["F4"]               # 鞠躬状态
+  "22": ["ctrl", "1"]        # 小药水
+  "23": ["ctrl", "2"]        # 内力药水
+  "24": ["ctrl", "3"]        # 中药水
+  "25": ["ctrl", "4"]        # 元气药水
+  "26": ["ctrl", "5"]        # 三防药水
+  "27": ["ctrl", "6"]        # 大药水
+  "28": ["alt", "1"]         # 角色面板
+  "29": ["alt", "2"]         # 物品面板
+  "30": ["alt", "3"]         # 武功面板
+  "31": ["alt", "4"]         # 技能面板
+  "32": ["alt", "5"]         # 门派面板
+  "33": ["alt", "6"]         # 任务面板
+  "34": ["alt", "7"]         # 商城面板
+  "35": ["alt", "8"]         # 助手面板
+  "36": ["alt", "m"]         # 地图面板
+  "37": ["shift", "mouse_left_click"]  # 攻击怪物
+  "38": ["ctrl", "mouse_left_click"]   # 攻击玩家
+  "mouse_left": ["Button.left"]           # 左键点击
+  "mouse_right": ["Button.right"]         # 右键点击
+  "mouse_x1": ["Button.x1"]              # 侧键1
+  "mouse_x2": ["Button.x2"]              # 侧键2
+  "shift_left": ["shift", "Button.left"]  # Shift+左键
+  "ctrl_left": ["ctrl", "Button.left"]    # Ctrl+左键
+  "alt_left": ["alt", "Button.left"]      # Alt+左键
+
+# 动作标签映射
+labels_dict:
+  # 基础动作 (0-3)
+  target_actions:
+    type_id: 0
+    actions:
+      "选定目标": 0   # ["mouse_left_click"]
+      "最近目标": 1   # ["tab"]
+      "切换目标": 2   # ["tab"]
+      "战斗状态": 3   # ["F2"]
+
+  # 移动动作 (4-11)
+  move_actions:
+    type_id: 1
+    actions:
+      "上": 4         # ["w"]
+      "右上": 5       # ["w", "d"]
+      "右": 6         # ["d"]
+      "右下": 7       # ["s", "d"]
+      "下": 8         # ["s"]
+      "左下": 9       # ["s", "a"]
+      "左": 10        # ["a"]
+      "左上": 11      # ["w", "a"]
+
+  # 战斗技能 (12-16)
+  attack_actions:
+    type_id: 2
+    actions:
+      "近战武功-1": 12  # ["F6"]
+      "近战武功-2": 13  # ["F7"]
+      "近战武功-3": 14  # ["F8"]
+      "远程武功": 15    # ["F9"]
+      "辅助武功": 16    # ["F11"]
+
+  # 增益技能 (17-19)
+  skills_actions:
+    type_id: 3
+    actions:
+      "步法武功": 17    # ["F5"]
+      "心法武功": 18    # ["F10"]
+      "护体武功": 19    # ["F12"]
+
+  # 状态切换 (20-21)
+  status_actions:
+    type_id: 4
+    actions:
+      "打坐状态": 20    # ["F3"]
+      "鞠躬状态": 21    # ["F4"]
+
+  # 物品使用 (22-27)
+  items_actions:
+    type_id: 5
+    actions:
+      "小药水": 22      # ["ctrl", "1"]
+      "内力药水": 23    # ["ctrl", "2"]
+      "中药水": 24      # ["ctrl", "3"]
+      "元气药水": 25    # ["ctrl", "4"]
+      "三防药水": 26    # ["ctrl", "5"]
+      "大药水": 27      # ["ctrl", "6"]
+
+  # UI面板 (28-36)
+  ui_actions:
+    type_id: 6
+    actions:
+      "角色面板": 28    # ["alt", "1"]
+      "物品面板": 29    # ["alt", "2"]
+      "武功面板": 30    # ["alt", "3"]
+      "技能面板": 31    # ["alt", "4"]
+      "门派面板": 32    # ["alt", "5"]
+      "任务面板": 33    # ["alt", "6"]
+      "商城面板": 34    # ["alt", "7"]
+      "助手面板": 35    # ["alt", "8"]
+      "地图面板": 36    # ["alt", "m"]
+
+  # 攻击模式 (37-38)
+  attack_mode:
+    type_id: 7
+    actions:
+      "攻击怪物": 37    # ["shift", "mouse_left_click"]
+      "攻击玩家": 38    # ["ctrl", "mouse_left_click"]
+
+
+
 # 添加强化学习相关配置
 rl_config:
   action_space:
@@ -179,12 +361,9 @@ rl_config:
       - name: "move"
         values: {"up": 0, "up_right": 1, "right": 2, "down_right": 3, "down": 4, "down_left": 5, "left": 6, "up_left": 7}
       - name: "attack"
-        values: {"normal": 0, "skill_1": 1}
+        values: {"monster": 0, "player": 1}
       - name: "skills"
-        values: {"skill_1": 0, "skill_2": 1, "skill_3": 2, "skill_4": 3, "ultimate": 4}
-    
-    # 连续动作空间定义(如果需要)
-    continuous_actions:
-      mouse_move:
-        x_range: [-100, 100]  # 相对移动范围
-        y_range: [-100, 100]
+        values: {"步法武功": 0, "心法武功": 1, "护体武功": 2, "近战武功-1": 3, "近战武功-2": 4, "近战武功-3": 5, "近战武功-4": 6, "远程武功": 7, "辅助武功": 8}
+ 
+
+

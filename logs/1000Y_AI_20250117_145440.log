@@ -1,4 +1,0 @@
-2025-01-17 14:54:40,453 - __main__ - INFO - 成功加载配置文件: config/env/game_config.yaml
-2025-01-17 14:54:40,453 - __main__ - INFO - 开始数据采集模式,持续时间:3600秒
-2025-01-17 14:54:40,454 - __main__ - ERROR - 运行出错: __init__() got an unexpected keyword argument 'logger'
-2025-01-17 14:54:40,454 - __main__ - INFO - 程序结束
