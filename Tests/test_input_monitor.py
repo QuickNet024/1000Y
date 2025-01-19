@@ -29,12 +29,12 @@ def main():
             name=MODULE_NAME,  # 使用主程序的模块名
             **logger_config
         ).get_logger()
-        
+        save_dir = config_manager.action_config['action_recording']['save_dir_input']
         # 创建输入监控器
         input_monitor = InputMonitor(
             action_config=config_manager.action_config,
-            save_dir="B:/1000Y_DATA_TEMP/data/input_records",
-            logger=LoggerManager(name='InputMonitor', **logger_config).get_logger()
+            save_dir= save_dir,
+            logger=LoggerManager(name=MODULE_NAME, **logger_config).get_logger()
         )
     except Exception as e:
         print(f"初始化失败: {e}")

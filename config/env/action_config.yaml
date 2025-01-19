@@ -13,7 +13,8 @@ control_range:
 # 动作记录配置
 action_recording:
   enabled: true
-  save_dir: "B:/1000Y_DATA_TEMP/data/input_records/"
+  save_dir_inputr: "B:/1000Y_DATA_TEMP/data/input_records/"
+  save_dir_output: "B:/1000Y_DATA_TEMP/data/output_records/"
   format: "json"
   record_interval: 0.1
 

@@ -35,6 +35,7 @@ class ImagePreprocessor:
             'skill_exp_min': self._preprocess_skill_exp,  # 技能小经验值
             'skill_exp_max': self._preprocess_skill_exp,  # 技能大经验值
             'target_hp': self._preprocess_target_hp,  # 目标血量
+            'target_name': self._preprocess_target_name,  # 目标名称    
             'nearby_monster_name_1': self._preprocess_nearby_monster_name_1,  # 近身寻怪名区域-1
             'nearby_monster_name_2': self._preprocess_nearby_monster_name_1,  # 近身寻怪名区域-2
             'char_revival': self._preprocess_char_revival,  # 角色复活信息
@@ -45,6 +46,44 @@ class ImagePreprocessor:
         }
         self.logger.info("=========================图像预处理器初始化完成=========================    ")
 
+    # 目标名称预处理
+    def _preprocess_target_name(self, image: np.ndarray) -> np.ndarray:
+        """目标名称预处理"""
+        try:
+            # 定义白色的BGR值和容差
+            white_color = np.array([255, 255, 255])
+            tolerance = 5
+            
+            # 创建白色区域的掩码
+            lower_bound = white_color - tolerance
+            upper_bound = white_color + tolerance
+            mask = cv2.inRange(image, lower_bound, upper_bound)
+            
+            # 创建全黑图像
+            result = np.zeros_like(image)
+            
+            # 将掩码区域设为白色
+            result[mask > 0] = [255, 255, 255]
+            
+            # 转换为灰度图
+            gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+            
+            # 二值化
+            _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
+            
+            # 图像反转
+            inverted = cv2.bitwise_not(binary)
+            
+            # 放大4倍
+            height, width = inverted.shape[:2]
+            enlarged = cv2.resize(inverted, (width * 4, height * 4), interpolation=cv2.INTER_LINEAR)
+            
+            return enlarged
+            
+        except Exception as e:
+            self.logger.error(f"预处理目标名称图像出错: {str(e)}")
+            return image
+    
     # 角色掉血值预处理
     def _preprocess_char_blood_loss(self, image: np.ndarray) -> np.ndarray:
         """角色掉血值预处理"""

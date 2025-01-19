@@ -583,7 +583,7 @@ class DataCollector:
             
             self.logger.info("帧处理完成")
             
-            return processed_data  # 返回所有处理数据，而不是只返回 enabled_states
+            return enabled_states  # 返回所有处理数据，而不是只返回 enabled_states
             
         except Exception as e:
             self.logger.error(f"处理帧时出错: {e}", exc_info=True)

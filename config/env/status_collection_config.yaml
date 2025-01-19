@@ -459,30 +459,6 @@ char_foot:
   save_debug:  # 是否保存调试图像
     Enabled: False
 
-# 角色脚防值
-char_foot:
-  Enabled: False
-  name_zh: "角色脚防值"  # 中文名映射
-  screen_capture:  # 截图模块
-    Enabled: True 
-    save_capture: True
-  screen_split:  # 画面分割模块 
-    Enabled: True 
-    coordinates: [927, 717, 1004, 723]  # 使用列表表示坐标
-    save_split: False    # 保存裁切图像  
-  image_preprocess:  # 图像预处理模块  
-    Enabled: True
-  text_recognizer:  # OCR 模块
-    Enabled: False  # 是否启用OCR   # 里面可以加 ocr_params:
-  data_processor:  # 数据处理模块
-    Enabled: True  # 是否启用数据处理
-  state_manager:  # 状态管理模块
-    Enabled: True  # 是否启用状态管理
-  debug_mode: # 是否启用调试模式
-    Enabled: False 
-  save_debug:  # 是否保存调试图像
-    Enabled: False
-
 # 角色元气值
 char_qigong:
   Enabled: False
@@ -619,7 +595,7 @@ target_name:
     coordinates: [34, 366, 167, 382]  # 使用列表表示坐标
     save_split: False    # 保存裁切图像  
   image_preprocess:  # 图像预处理模块  
-    Enabled: False
+    Enabled: True
   text_recognizer:  # OCR 模块
     Enabled: True  # 是否启用OCR   # 里面可以加 ocr_params:
   data_processor:  # 数据处理模块
@@ -629,7 +605,7 @@ target_name:
   debug_mode: # 是否启用调试模式
     Enabled: False 
   save_debug:  # 是否保存调试图像
-    Enabled: False
+    Enabled: True
 
 
 
